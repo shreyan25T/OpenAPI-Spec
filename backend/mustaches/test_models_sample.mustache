@@ -1,0 +1,35 @@
+# coding: utf-8
+
+{{>partial_header}}
+from __future__ import absolute_import
+
+import json
+import pytest
+from django.test import Client
+from django.test import TestCase
+from django.urls import reverse
+
+# from {{packageName}}.views import *
+# from {{packageName}}.models import *
+
+
+@pytest.mark.django_db
+class Test{{className}}(TestCase):
+    """{{className}} unit test stubs"""
+
+    def setUp(self):
+        self.client = Client() {{! Iterating the models  }}{{#models}}
+        # self.{{modelVariable}} = {{modelName}}.objects.create(**{{#modelExample}}{{{.}}}{{/modelExample}})
+        {{/models}}
+
+    def tearDown(self):
+        pass
+
+    {{#getOperations}}
+    def test_{{functionName}}(self):
+        url = reverse('{{url}}')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, {{statusCode}})
+        self.assertIsInstance(response.json(), {{responseObjectType}})
+
+    {{/getOperations}}

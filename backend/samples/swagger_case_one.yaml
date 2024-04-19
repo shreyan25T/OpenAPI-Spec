@@ -1,0 +1,564 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /common/languages:
+    get:
+      operationId: common_languages_retrieve
+      tags:
+      - common
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: common_languages_create
+      tags:
+      - common
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /common/languages/{language_id}/:
+    get:
+      operationId: common_languages_retrieve_2
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - common
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    put:
+      operationId: common_languages_update
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - common
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Language'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Language'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Language'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    delete:
+      operationId: common_languages_destroy
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - common
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /common/lanreg/{region_id}/:
+    get:
+      operationId: common_lanreg_retrieve
+      parameters:
+      - in: path
+        name: region_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - common
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /common/lanregdf/{region_id}/:
+    get:
+      operationId: common_lanregdf_retrieve
+      parameters:
+      - in: path
+        name: region_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - common
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /common/regions/{region_id}/:
+    get:
+      operationId: common_regions_retrieve
+      parameters:
+      - in: path
+        name: region_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - common
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+          description: ''
+  /common/tenants/{tenant_id}/:
+    get:
+      operationId: common_tenants_retrieve
+      parameters:
+      - in: path
+        name: tenant_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - common
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /tenant1/languages:
+    get:
+      operationId: tenant1_languages_retrieve
+      tags:
+      - tenant1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: tenant1_languages_create
+      tags:
+      - tenant1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /tenant1/languages/{language_id}/:
+    get:
+      operationId: tenant1_languages_retrieve_2
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tenant1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    put:
+      operationId: tenant1_languages_update
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tenant1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Language'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Language'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Language'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    delete:
+      operationId: tenant1_languages_destroy
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tenant1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /tenant2/languages:
+    get:
+      operationId: tenant2_languages_retrieve
+      tags:
+      - tenant2
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: tenant2_languages_create
+      tags:
+      - tenant2
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /tenant2/languages/{language_id}/:
+    get:
+      operationId: tenant2_languages_retrieve_2
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tenant2
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    put:
+      operationId: tenant2_languages_update
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tenant2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Language'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Language'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Language'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    delete:
+      operationId: tenant2_languages_destroy
+      parameters:
+      - in: path
+        name: language_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tenant2
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Language:
+      type: object
+      properties:
+        language_code:
+          type: string
+        language_description:
+          type: string
+        currency_symbol:
+          type: string
+        active:
+          type: integer
+        created_by:
+          type: string
+        modified_by:
+          type: string
+        default_language:
+          type: string
+        region_id:
+          type: integer
+        tenant_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        modified_at:
+          type: string
+          format: date-time
+      required:
+      - active
+      - created_by
+      - currency_symbol
+      - default_language
+      - language_code
+      - language_description
+      - modified_by
+      - region_id
+      - tenant_id
+    Region:
+      type: object
+      properties:
+        region_name:
+          type: string
+        region_code:
+          type: string
+        active:
+          type: integer
+        created_by:
+          type: string
+        modified_by:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        modified_at:
+          type: string
+          format: date-time
+      required:
+      - active
+      - created_by
+      - modified_by
+      - region_code
+      - region_name
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

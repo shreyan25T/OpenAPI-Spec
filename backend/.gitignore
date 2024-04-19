@@ -1,0 +1,21 @@
+__pycache__/
+__pypackages__/
+
+*.py[cod]
+*$py.class
+*.manifest
+*.spec
+*.log
+.env
+db.sqlite3
+
+# Removing the generated tests files
+test*.py
+
+.idea/
+py_env/
+
+
+api_projects/
+downloads/
+tests/
