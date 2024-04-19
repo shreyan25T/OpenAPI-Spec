@@ -6,6 +6,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 const OpenAPISpecReader = () => {
   const [specData, setSpecData] = useState('');
   const [testResult, setTestResult] = useState('');
+  const [specPath, setspecPath] = useState('');
   const [fileName, setFileName] = useState('No file chosen');
 
   const handleUpload = async (e) => {
@@ -23,14 +24,14 @@ const OpenAPISpecReader = () => {
         }
       });
 
-      // Assuming the response.data contains the content of the file directly
-      let fileContent = response.data.content;
-
+      let fileContent = response.data.data.spec_content;
+      console.log('spec',response.data.data.spec_content)
       // Remove double quotes from the content
       fileContent = fileContent.replace(/"/g, '');
 
       // Update the text field with the content of the file
       setSpecData(fileContent);
+      setspecPath(response.data.data.spec_file_path)
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -38,12 +39,13 @@ const OpenAPISpecReader = () => {
 
   const handleTest = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/test', { spec_data: specData }, {
+      const response = await axios.post('http://127.0.0.1:8000/test', { spec_content: specData ,spec_file_path:specPath}, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
       setTestResult(response.data.result);
+
     } catch (error) {
       console.error('Error testing spec:', error);
     }
