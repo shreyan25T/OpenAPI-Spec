@@ -2,11 +2,18 @@ import os
 import yaml
 import pystache
 from openapi_parser import parse
-
+import zipfile
 import constants
 from constants import test_mustache_sample, test_dir
 from utils.parser_utils import camel_to_snake, get_schema_payload
 
+def create_zip_file():
+    zip_file_path = os.path.join(test_dir, 'test_files.zip')
+    with zipfile.ZipFile(zip_file_path, 'w') as zipf:
+        for folder, _, files in os.walk(test_dir):
+            for file in files:
+                zipf.write(os.path.join(folder, file), arcname=file)
+    return zip_file_path
 
 def test_case_generator(yaml_file):
     content = parse(yaml_file)

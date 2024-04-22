@@ -10,6 +10,7 @@ const OpenAPISpecReader = () => {
   const [testResult, setTestResult] = useState('');
   const [specPath, setspecPath] = useState('');
   const [fileName, setFileName] = useState('No file chosen');
+  const [isFileUploaded, setIsFileUploaded] = useState(false);
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -31,6 +32,7 @@ const OpenAPISpecReader = () => {
         fileContent = fileContent.replace(/"/g, '');
         setSpecData(fileContent);
         setspecPath(response.data.data.spec_file_path);
+        setIsFileUploaded(true);
       } else {
         toast.error(response.data.message); // Show error message from backend
       }
@@ -56,6 +58,24 @@ const OpenAPISpecReader = () => {
     } catch (error) {
       console.error('Error testing spec:', error);
       setTestResult('Error testing spec.');
+    }
+  };
+
+  const handleDownloadZip = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/download-zip', {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'test_files.zip');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading zip file:', error);
     }
   };
 
@@ -87,6 +107,9 @@ const OpenAPISpecReader = () => {
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" onClick={handleTest}>Test Spec</Button>
+        {isFileUploaded && (
+          <Button variant="contained" onClick={handleDownloadZip} style={{ marginLeft: '10px' }}>Download Test Files</Button>
+         )}
       </Grid>
       <Grid item xs={12}>
         <Typography variant="body1">{testResult}</Typography>

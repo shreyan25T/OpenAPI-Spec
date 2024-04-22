@@ -8,6 +8,8 @@ from utils.events import app_startup
 from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 from constants import *
+from utils.gen_utc import create_zip_file
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 app.add_event_handler("startup", app_startup)
@@ -62,6 +64,10 @@ async def test(spec_data: SpecData):
     test_case_generator(spec_data.spec_file_path)
     return {"status": "success"}
 
+@app.get("/download-zip")
+async def download_zip_file():
+    zip_file_path = create_zip_file()
+    return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
