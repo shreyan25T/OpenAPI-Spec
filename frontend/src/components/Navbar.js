@@ -5,9 +5,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import logo from "../assests/TA-Logo.png";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Navbar = () => {
-  const Logout = () => {};
+  const { logout } = useAuth0();
   return (
     <AppBar position="static">
       <Toolbar>
@@ -20,8 +21,13 @@ const Navbar = () => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           OPENAPI SPEC APP
         </Typography>
-        <Button color="inherit" onClick={Logout}>
-          Logout
+        <Button
+          color="inherit"
+          onClick={() =>
+            logout({ logoutParams: { returnTo: window.location.origin } })
+          }
+        >
+          Log Out
         </Button>
       </Toolbar>
     </AppBar>
