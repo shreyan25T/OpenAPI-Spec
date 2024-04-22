@@ -32,7 +32,7 @@ const OpenAPISpecReader = () => {
         fileContent = fileContent.replace(/"/g, '');
         setSpecData(fileContent);
         setspecPath(response.data.data.spec_file_path);
-        setIsFileUploaded(true);
+
       } else {
         toast.error(response.data.message); // Show error message from backend
       }
@@ -52,6 +52,7 @@ const OpenAPISpecReader = () => {
 
       if (response.data.status === 'success') {
         setTestResult('Test cases got generated successfully.');
+        setIsFileUploaded(true);
       } else {
         setTestResult('Error generating test cases.');
       }
