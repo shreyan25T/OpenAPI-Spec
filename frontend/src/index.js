@@ -6,11 +6,16 @@ import reportWebVitals from "./reportWebVitals";
 import { Auth0Provider } from "@auth0/auth0-react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const domain_secret = process.env.REACT_APP_DOMAIN;
+const client_secret = process.env.REACT_APP_CLIENT_ID;
+console.log("DOMAIN", domain_secret);
+console.log("CLIENT", client_secret);
+
 root.render(
   <React.StrictMode>
     <Auth0Provider
-      domain="dev-b8zuikt7pjh4wvnd.us.auth0.com"
-      clientId="XeD0crLieEPnExKiyoMcdTXXBgNY3Ua2"
+      domain={domain_secret}
+      clientId={client_secret}
       authorizationParams={{
         redirect_uri: window.location.origin,
       }}
