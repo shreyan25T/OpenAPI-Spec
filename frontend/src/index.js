@@ -4,6 +4,8 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { BrowserRouter,RouterProvider } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const domain_secret = process.env.REACT_APP_DOMAIN;
@@ -11,17 +13,31 @@ const client_secret = process.env.REACT_APP_CLIENT_ID;
 console.log("DOMAIN", domain_secret);
 console.log("CLIENT", client_secret);
 
+const Auth0ProviderWithRedirectCallback = ({ children, ...props }) => {
+  const navigate = useNavigate();
+  const onRedirectCallback = (appState) => {
+    navigate((appState && appState.returnTo) || window.location.pathname);
+  };
+  return (
+    <Auth0Provider  onRedirectCallback={onRedirectCallback} {...props}>
+      {children}
+    </Auth0Provider>
+  );
+};
+
 root.render(
   <React.StrictMode>
-    <Auth0Provider
-      domain={domain_secret}
-      clientId={client_secret}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-      }}
-    >
-      <App />
-    </Auth0Provider>
+    <BrowserRouter>
+      <Auth0ProviderWithRedirectCallback
+        domain={domain_secret}
+        clientId={client_secret}
+        authorizationParams={{
+          redirect_uri: window.location.origin,
+        }}
+      >
+        <App />
+      </Auth0ProviderWithRedirectCallback>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

@@ -4,8 +4,11 @@ import { Button, Grid, TextField, Typography } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth0 } from "@auth0/auth0-react";
+import Navbar from './Navbar';
 
 const OpenAPISpecReader = () => {
+  const { user, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
   const [specData, setSpecData] = useState('');
   const [testResult, setTestResult] = useState('');
   const [specPath, setspecPath] = useState('');
@@ -21,7 +24,7 @@ const OpenAPISpecReader = () => {
     setFileName(file.name);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/upload', formData, {
+      const response = await axios.post('http://127.0.0.1:8000/home/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -44,7 +47,7 @@ const OpenAPISpecReader = () => {
 
   const handleTest = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/test', { spec_content: specData, spec_file_path: specPath }, {
+      const response = await axios.post('http://127.0.0.1:8000/home/test', { spec_content: specData, spec_file_path: specPath }, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -64,7 +67,7 @@ const OpenAPISpecReader = () => {
 
   const handleDownloadZip = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/download-zip', {
+      const response = await axios.get('http://127.0.0.1:8000/home/download-zip', {
         responseType: 'blob'
       });
 
@@ -84,10 +87,13 @@ const OpenAPISpecReader = () => {
 
 
   return (
+   <React.Fragment>
+    <Navbar/>
     <Grid container spacing={2} alignItems="center" justifyContent="center">
       <ToastContainer />
       <Grid item xs={12}>
         <input type="file" onChange={handleUpload} style={{ display: 'none' }} id="upload-file-input" />
+        <h1>Hi {user.name}</h1>
         <label htmlFor="upload-file-input">
           <Button variant="contained" component="span" startIcon={<CloudUploadIcon />}>
             Upload File
@@ -116,6 +122,7 @@ const OpenAPISpecReader = () => {
         <Typography variant="body1">{testResult}</Typography>
       </Grid>
     </Grid>
+    </React.Fragment>
   );
 };
 

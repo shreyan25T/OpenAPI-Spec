@@ -35,7 +35,7 @@ def validation_exception_handler(request, err):
     )
 
 
-@app.post("/upload")
+@app.post("/home/upload")
 async def upload_and_gen_utc(file: UploadFile = File(...)):
     yaml_file_path = os.path.join(download_dir, str(file.filename).strip().replace(" ", "_"))
     if file.filename.endswith(".yaml") or file.filename.endswith(".yml"):
@@ -52,7 +52,7 @@ async def upload_and_gen_utc(file: UploadFile = File(...)):
         return {"status": "error", "message": "kindly, upload yaml file"}
 
 
-@app.post("/test")
+@app.post("/home/test")
 async def test(spec_data: SpecData):
     try:
         _ = yaml.safe_load(spec_data.spec_content)
@@ -64,7 +64,7 @@ async def test(spec_data: SpecData):
     test_case_generator(spec_data.spec_file_path)
     return {"status": "success"}
 
-@app.get("/download-zip")
+@app.get("/home/download-zip")
 async def download_zip_file():
     zip_file_path = create_zip_file()
     return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')
