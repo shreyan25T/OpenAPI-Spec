@@ -12,6 +12,7 @@ const OpenAPISpecReader = () => {
   const [specData, setSpecData] = useState("");
   const [testResult, setTestResult] = useState("");
   const [specPath, setspecPath] = useState("");
+  const [uuId, setuuId] = useState("");
   const [fileName, setFileName] = useState("No file chosen");
   const [isFileUploaded, setIsFileUploaded] = useState(false);
 
@@ -41,6 +42,10 @@ const OpenAPISpecReader = () => {
         fileContent = fileContent.replace(/"/g, "");
         setSpecData(fileContent);
         setspecPath(response.data.data.spec_file_path);
+        setuuId(response.data.data.spec_uuid);
+        console.log("specPath",response.data.data.spec_uuid);
+        console.log(response.data.data)
+
       } else {
         toast.error(response.data.message); // Show error message from backend
       }
@@ -54,7 +59,7 @@ const OpenAPISpecReader = () => {
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/home/test",
-        { spec_content: specData, spec_file_path: specPath },
+        { spec_content: specData, spec_file_path: specPath,spec_uuid:uuId },
         {
           headers: {
             "Content-Type": "application/json",
