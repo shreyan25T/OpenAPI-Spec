@@ -7,16 +7,25 @@ import constants
 from constants import test_mustache_sample, test_dir
 from utils.parser_utils import camel_to_snake, get_schema_payload
 
-def create_zip_file():
-    zip_file_path = os.path.join(test_dir, 'test_files.zip')
+def create_zip_file(zip_folder_path):
+    zip_file_path = os.path.join(zip_folder_path, 'test_files.zip')
+    if os.path.exists(zip_file_path):
+        print("File Present, so Deleting it..")
+        os.remove(zip_file_path)
+    
+    print("ZIPPING IN")
     with zipfile.ZipFile(zip_file_path, 'w') as zipf:
-        for folder, _, files in os.walk(test_dir):
+        for folder, _, files in os.walk(zip_folder_path):
             for file in files:
-                zipf.write(os.path.join(folder, file), arcname=file)
+                if '.zip' not in file:
+                    zipf.write(os.path.join(folder, file), arcname=file)
+    print("ZIPPING OUT")
     return zip_file_path
 
-def test_case_generator(yaml_file):
+def test_case_generator(yaml_file,output_path):
+
     content = parse(yaml_file)
+    print("CONTENT",yaml_file)
 
     with open(test_mustache_sample, 'r') as f:
         template_str = f.read()
@@ -53,7 +62,7 @@ def test_case_generator(yaml_file):
 
         rendered = pystache.render(template_str, methods)
 
-        with open(os.path.join(test_dir, f'test_{tag.name}_manager.py'), 'w') as f:
+        with open(os.path.join(output_path, f'test_{tag.name}_manager.py'), 'w') as f:
             f.write(rendered)
 
 

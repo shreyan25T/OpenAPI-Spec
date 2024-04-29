@@ -11,6 +11,7 @@ from constants import *
 from utils.gen_utc import create_zip_file
 from fastapi.responses import FileResponse
 import uuid
+from fastapi import HTTPException
 
 app = FastAPI()
 app.add_event_handler("startup", app_startup)
@@ -65,18 +66,40 @@ async def test(spec_data: SpecData):
     except yaml.YAMLError as e:
         return {"status": "error", "message": "Invalid YAML file."}
 
+    # Create a folder with the same UUID in the /tests folder
+    test_folder_path = os.path.join(test_dir, spec_data.spec_uuid)
+    os.makedirs(test_folder_path, exist_ok=True)
+
+    # Write the spec_content to a file in the test folder
+    spec_data.spec_file_path = os.path.join(test_folder_path, "spec.yaml")
+    
     with open(spec_data.spec_file_path, "w") as f:
         print("spec_uuid",spec_data.spec_uuid)
         print("spec_path",spec_data.spec_file_path)
    
         f.write(spec_data.spec_content)
-    test_case_generator(spec_data.spec_file_path)
+    test_case_generator(spec_data.spec_file_path,test_folder_path)
     return {"status": "success"}
 
 @app.get("/home/download-zip")
-async def download_zip_file():
-    zip_file_path = create_zip_file()
+async def download_zip_file(unique_session_id=str):
+    print("UNIQUE",unique_session_id)
+    zip_folder_path = os.path.join(test_dir, unique_session_id)
+    zip_file_path = create_zip_file(zip_folder_path)
+    print("ZIP path",zip_file_path)
     return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')
+
+# @app.post("/home/download-zip")
+# async def download_zip_file(spec_data: SpecData):
+#     try:
+#         # You can optionally validate spec_data here
+        
+#         zip_folder_path = os.path.join(test_dir, spec_data.spec_uuid)
+#         zip_file_path = create_zip_file(zip_folder_path)
+#         return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
