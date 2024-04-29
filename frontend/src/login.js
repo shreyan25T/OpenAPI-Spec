@@ -24,7 +24,7 @@ const Login = () => {
       <Typography variant="h4" gutterBottom>
         Welcome to OpenApi Spec
       </Typography>
-      <Button variant="contained" onClick={handleLogin}>
+      <Button variant="contained" color="secondary" onClick={handleLogin}>
         Log In
       </Button>
     </Box>

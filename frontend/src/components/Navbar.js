@@ -10,7 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 const Navbar = () => {
   const { logout } = useAuth0();
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="secondary">
       <Toolbar>
         <Box
           component="img"
