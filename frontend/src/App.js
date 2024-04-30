@@ -1,16 +1,15 @@
 import React from "react";
 import OpenAPISpecReader from "./components/OpenAPISpecReader";
 import Login from "./login";
-import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { Auth0Provider, withAuthenticationRequired } from "@auth0/auth0-react";
-import ErrorBoundary from "./components/ErrorBoundary";
-import NotFound from "./components/NotFound";
+import ErrorBoundary from "./components/error/ErrorBoundary";
+import NotFound from "./components/error/NotFound";
 import CircularProgress from "@mui/material/CircularProgress";
+import DashBoard from "./components/Dashboard";
+
 import {
-  Button,
-  Typography,
   Box,
   CssBaseline,
   StyledEngineProvider,
@@ -53,6 +52,10 @@ function App() {
                 <Route
                   path="/home"
                   element={<ProtectedRoute component={OpenAPISpecReader} />}
+                />
+                <Route
+                  path="/dashboard"
+                  element={<ProtectedRoute component={DashBoard} />}
                 />
                 <Route path="*" element={<NotFound />} />
               </Routes>

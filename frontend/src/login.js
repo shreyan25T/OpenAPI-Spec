@@ -8,7 +8,7 @@ const Login = () => {
   const handleLogin = async () => {
     await loginWithRedirect({
       appState: {
-        returnTo: "/home",
+        returnTo: "/dashboard",
       },
     });
   };

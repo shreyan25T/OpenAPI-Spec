@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth0 } from "@auth0/auth0-react";
-import Navbar from "./Navbar";
+import Navbar from "./navbar/Navbar";
 import { Box } from "@mui/material";
+
 
 const OpenAPISpecReader = () => {
   const { user, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
@@ -127,8 +128,8 @@ const OpenAPISpecReader = () => {
   return (
     <React.Fragment>
       <Navbar />
-      {/* <Grid container spacing={2} alignItems="center" justifyContent="center"> */}
-      <div className="grid grid-cols-1 gap-4 justify-items-center mt-20">
+
+      <div className="grid grid-cols-1 gap-2 justify-items-center mt-20">
         <ToastContainer />
         <Box
           display={"flex"}
@@ -192,8 +193,9 @@ const OpenAPISpecReader = () => {
         >
           <Typography variant="body1">{testResult}</Typography>
         </Box>
+
       </div>
-      {/* </Grid> */}
+
     </React.Fragment>
   );
 };
