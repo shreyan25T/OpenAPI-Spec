@@ -60,7 +60,7 @@ async def upload_and_gen_utc(file: UploadFile = File(...)):
 
 
 @app.post("/home/test")
-async def test(spec_data: SpecData):
+async def test(spec_data: SpecData, locust_flag: str | None = None):
     try:
         _ = yaml.safe_load(spec_data.spec_content)
     except yaml.YAMLError as e:
@@ -72,13 +72,13 @@ async def test(spec_data: SpecData):
 
     # Write the spec_content to a file in the test folder
     spec_data.spec_file_path = os.path.join(test_folder_path, "spec.yaml")
-    
+
     with open(spec_data.spec_file_path, "w") as f:
         print("spec_uuid",spec_data.spec_uuid)
         print("spec_path",spec_data.spec_file_path)
-   
+
         f.write(spec_data.spec_content)
-    test_case_generator(spec_data.spec_file_path,test_folder_path)
+    test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag)
     return {"status": "success"}
 
 @app.get("/home/download-zip")
@@ -93,7 +93,7 @@ async def download_zip_file(unique_session_id=str):
 # async def download_zip_file(spec_data: SpecData):
 #     try:
 #         # You can optionally validate spec_data here
-        
+
 #         zip_folder_path = os.path.join(test_dir, spec_data.spec_uuid)
 #         zip_file_path = create_zip_file(zip_folder_path)
 #         return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')

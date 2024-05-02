@@ -29,7 +29,7 @@ const SpecLocustReader = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/locust/upload",
+        "http://127.0.0.1:8000/home/upload",
         formData,
         {
           headers: {
@@ -58,7 +58,7 @@ const SpecLocustReader = () => {
   const handleTest = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/locust/test",
+        "http://127.0.0.1:8000/home/test?locust_flag=locust",
         { spec_content: specData, spec_file_path: specPath, spec_uuid: uuId },
         {
           headers: {
@@ -82,7 +82,7 @@ const SpecLocustReader = () => {
   const handleDownloadZip = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/locust/download-zip?unique_session_id=${encodeURIComponent(
+        `http://127.0.0.1:8000/home/download-zip?unique_session_id=${encodeURIComponent(
           uuId
         )}`,
         {

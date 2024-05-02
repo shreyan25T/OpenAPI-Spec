@@ -4,7 +4,7 @@ import pystache
 from openapi_parser import parse
 import zipfile
 import constants
-from constants import test_mustache_sample, test_dir
+from constants import test_mustache_sample, test_dir,locust_mustache_sample
 from utils.parser_utils import camel_to_snake, get_schema_payload
 
 def create_zip_file(zip_folder_path):
@@ -12,7 +12,7 @@ def create_zip_file(zip_folder_path):
     if os.path.exists(zip_file_path):
         print("File Present, so Deleting it..")
         os.remove(zip_file_path)
-    
+
     print("ZIPPING IN")
     with zipfile.ZipFile(zip_file_path, 'w') as zipf:
         for folder, _, files in os.walk(zip_folder_path):
@@ -22,13 +22,17 @@ def create_zip_file(zip_folder_path):
     print("ZIPPING OUT")
     return zip_file_path
 
-def test_case_generator(yaml_file,output_path):
+def test_case_generator(yaml_file,output_path,locust_flag):
 
     content = parse(yaml_file)
     print("CONTENT",yaml_file)
 
     with open(test_mustache_sample, 'r') as f:
         template_str = f.read()
+
+    if locust_flag is not None:
+        with open(locust_mustache_sample, 'r') as f:
+            template_str = f.read()
 
     for tag in content.tags:
         methods = {
