@@ -118,10 +118,10 @@ const SpecLocustReader = () => {
             type="file"
             onChange={handleUpload}
             style={{ display: "none" }}
-            id="upload-file-input"
+            id="upload-file-input2"
           />
-          <h3>Hi {user.name} you can generate locust files </h3>
-          <label htmlFor="upload-file-input">
+          <h3>Hi {user.name} you can generate locust files here </h3>
+          <label htmlFor="upload-file-input2">
             <Button
               variant="contained"
               color="secondary"
