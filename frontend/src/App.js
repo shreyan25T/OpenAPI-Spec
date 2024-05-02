@@ -9,14 +9,11 @@ import NotFound from "./components/error/NotFound";
 import CircularProgress from "@mui/material/CircularProgress";
 import DashBoard from "./components/Dashboard";
 
-import {
-  Box,
-  CssBaseline,
-  StyledEngineProvider,
-} from "@mui/material";
+import { Box, CssBaseline, StyledEngineProvider } from "@mui/material";
 
 import { ThemeProvider } from "@emotion/react";
 import lightTheme from "./themes/lightTheme";
+import SpecLocustReader from "./components/SpecLocustReader";
 
 const ProtectedRoute = ({ component, ...args }) => {
   const Component = withAuthenticationRequired(component, args);
@@ -52,6 +49,10 @@ function App() {
                 <Route
                   path="/home"
                   element={<ProtectedRoute component={OpenAPISpecReader} />}
+                />
+                <Route
+                  path="/locust"
+                  element={<ProtectedRoute component={SpecLocustReader} />}
                 />
                 <Route
                   path="/dashboard"
