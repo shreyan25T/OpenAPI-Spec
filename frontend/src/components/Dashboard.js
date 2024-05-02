@@ -11,8 +11,8 @@ const elements = [
         iconPath: pytestlogo, routeTo: "/home"
     },
     {
-        title: "Locust Load", description: "Creates the locust test files", iconPath: locustlogo,
-        routeTo: "/locust"
+        title: "Locust Load", description: "Creates the locust test files",
+        iconPath: locustlogo, routeTo: "/locust"
     },
 ];
 
