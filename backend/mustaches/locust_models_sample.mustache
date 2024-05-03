@@ -5,11 +5,12 @@ from __future__ import absolute_import
 
 from locust import HttpUser, task
 
+
 class Test{{className}}(HttpUser):
     """{{className}} load test stubs"""
 
-    @task
     {{#getOperations}}
+    @task
     def test_{{functionName}}(self):
         self.client.get('{{url}}')
 

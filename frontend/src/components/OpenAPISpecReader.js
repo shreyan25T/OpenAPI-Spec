@@ -9,6 +9,7 @@ import Navbar from "./navbar/Navbar";
 import { Box } from "@mui/material";
 
 
+
 const OpenAPISpecReader = () => {
   const { user, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
   const [specData, setSpecData] = useState("");

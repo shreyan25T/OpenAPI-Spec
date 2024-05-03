@@ -54,6 +54,9 @@ def test_case_generator(yaml_file,output_path,locust_flag):
                             else:
                                 type_f, payload_p = 'dict', {}
 
+                            if locust_flag is not None and res.code != 200:
+                                continue
+
                             item.append({
                                 "url": path.url,
                                 "functionName": camel_to_snake(ops.operation_id) + "_" + str(res.code),
@@ -68,7 +71,6 @@ def test_case_generator(yaml_file,output_path,locust_flag):
 
         with open(os.path.join(output_path, f'test_{tag.name}_manager.py'), 'w') as f:
             f.write(rendered)
-
 
 if __name__ == '__main__':
     with open(constants.sample_yaml, "r") as file:
