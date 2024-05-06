@@ -26,7 +26,7 @@ const Selenium = () => {
     const onRemoveSelected = useCallback(() => {
       var selectedRowData = gridRef.current.api.getSelectedRows();
       gridRef.current.api.applyTransaction({ remove: selectedRowData });
-    }, []);
+    }, [setRowData]);
 
     const onTestButtonClick = async () => {
       try {
