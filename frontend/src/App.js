@@ -8,6 +8,7 @@ import ErrorBoundary from "./components/error/ErrorBoundary";
 import NotFound from "./components/error/NotFound";
 import CircularProgress from "@mui/material/CircularProgress";
 import DashBoard from "./components/Dashboard";
+import Selenium from "./components/Selenium";
 
 import { Box, CssBaseline, StyledEngineProvider } from "@mui/material";
 
@@ -53,6 +54,10 @@ function App() {
                 <Route
                   path="/locust"
                   element={<ProtectedRoute component={SpecLocustReader} />}
+                />
+                <Route
+                  path="/selenium"
+                  element={<ProtectedRoute component={Selenium} />}
                 />
                 <Route
                   path="/dashboard"

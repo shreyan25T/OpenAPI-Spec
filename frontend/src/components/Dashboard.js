@@ -4,6 +4,7 @@ import Navbar from "./navbar/Navbar";
 import DashBoardCard from "./cards/DashBoardCard";
 import pytestlogo from "../assests/pytest.png";
 import locustlogo from "../assests/locust.png";
+import seleniumlogo from "../assests/selenium.png";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const elements = [
@@ -18,6 +19,12 @@ const elements = [
     description: "Creates the locust test files",
     iconPath: locustlogo,
     routeTo: "/locust",
+  },
+  {
+    title: "Selenium Test",
+    description: "Creates the selenium test files ",
+    iconPath: seleniumlogo,
+    routeTo: "/selenium",
   },
 ];
 

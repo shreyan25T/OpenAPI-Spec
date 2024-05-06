@@ -1,0 +1,17 @@
+.ag-theme-quartz {
+    --ag-header-height: 30px;
+    --ag-header-foreground-color: white;
+    --ag-header-background-color:#F7901D;
+    --ag-header-cell-hover-background-color:#ED8109;
+    --ag-header-cell-moving-background-color: #ED8109;
+}
+.ag-theme-quartz .ag-header {
+    font-family: cursive;
+}
+.ag-theme-quartz .ag-header-group-cell {
+    font-weight: normal;
+    font-size: 22px;
+}
+.ag-theme-quartz .ag-header-cell {
+    font-size: 18px;
+}
