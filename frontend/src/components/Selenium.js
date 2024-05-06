@@ -4,6 +4,9 @@ import { Button, MenuItem, Select, TextField } from '@mui/material';
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import Navbar from './navbar/Navbar';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import "../assests/style.css";
 
 const Selenium = () => {
@@ -25,6 +28,21 @@ const Selenium = () => {
       gridRef.current.api.applyTransaction({ remove: selectedRowData });
     }, []);
 
+    const onTestButtonClick = async () => {
+      try {
+          const response = await fetch('http://127.0.0.1:8000/selenium/test', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(rowData),
+          });
+          const data = await response.json();
+          console.log(data);
+      } catch (error) {
+          console.error('Error:', error);
+      }
+  };
 
     const actionOptions = ['send_keys', 'clear', 'wait time', 'click'];
 
@@ -61,12 +79,15 @@ const Selenium = () => {
                     defaultColDef={{ flex: 1, editable: true }}
                 />
             </div>
-            <Button variant="contained" color="secondary" onClick={handleAddRow} >
+            <Button variant="contained" color="secondary" onClick={handleAddRow} startIcon={<AddIcon />}>
                 Add Row
             </Button>
-            <Button variant="contained" color="secondary" onClick={onRemoveSelected} style={{ marginTop: '5px' }}>
+            <Button variant="contained" color="secondary" onClick={onRemoveSelected} startIcon={<DeleteIcon />} style={{ marginTop: '5px' }}>
                 Delete Row
             </Button>
+            <Button variant="contained" color="secondary" onClick={onTestButtonClick} style={{ marginTop: '5px' }}>
+                    Test Button
+                </Button>
         </div>
         </React.Fragment>
     );

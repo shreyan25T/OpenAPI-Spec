@@ -11,6 +11,7 @@ from constants import *
 from utils.gen_utc import create_zip_file
 from fastapi.responses import FileResponse
 import uuid
+from typing import List
 from fastapi import HTTPException
 
 app = FastAPI()
@@ -29,7 +30,12 @@ class SpecData(BaseModel):
     spec_file_path: str
     spec_uuid: str
 
-
+class RowData(BaseModel):
+    id: int
+    by: str
+    byInput: str
+    action: str
+    actionInput: str
 
 @app.exception_handler(Exception)
 def validation_exception_handler(request, err):
@@ -89,16 +95,11 @@ async def download_zip_file(unique_session_id=str):
     print("ZIP path",zip_file_path)
     return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')
 
-# @app.post("/home/download-zip")
-# async def download_zip_file(spec_data: SpecData):
-#     try:
-#         # You can optionally validate spec_data here
 
-#         zip_folder_path = os.path.join(test_dir, spec_data.spec_uuid)
-#         zip_file_path = create_zip_file(zip_folder_path)
-#         return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+@app.post("/selenium/test")
+async def process_data(data: List[RowData]):
+    print("Received data:", data)
+    return {"message": "Data received successfully"}
 
 
 if __name__ == '__main__':
