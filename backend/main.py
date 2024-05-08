@@ -5,7 +5,7 @@ from starlette.responses import JSONResponse
 import os
 from utils.gen_utc import test_case_generator
 from utils.events import app_startup
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File,Request
 from pydantic import BaseModel
 from constants import *
 from utils.gen_utc import create_zip_file
@@ -98,14 +98,22 @@ async def download_zip_file(unique_session_id=str):
 
 
 @app.post("/selenium/test")
-async def process_data(url: str,data: List[RowData]):
+async def process_data(request: Request):
     try:
+        request_body = await request.json()
+        url = request_body.get("url")  
+        data = request_body.get("data")
+
+        if url is None or data is None:
+            raise HTTPException(status_code=400, detail="Invalid request body")
+
         print("Received URL:", url)
         print("Received data:", data)
 
-        return {"message": "Data received successfully"}
+        return JSONResponse(content={"message": "Data received successfully"})
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error processing data: {str(e)}")
+
 
 
 
