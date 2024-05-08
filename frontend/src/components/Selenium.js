@@ -6,6 +6,8 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import Navbar from "./navbar/Navbar";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios";
+
 
 import "../assests/style.css";
 
@@ -47,19 +49,23 @@ const Selenium = () => {
 
   const onTestButtonClick = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/selenium/test", {
-        method: "POST",
+      const requestData = {
+        url: url,
+        data: rowData,
+      };
+
+      const response = await axios.post("http://127.0.0.1:8000/selenium/test", requestData, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(url),
       });
-      const data = await response.json();
+      const data = response.data;
       console.log(data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
+
 
   const actionOptions = [
     "send_keys",
