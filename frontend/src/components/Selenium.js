@@ -52,7 +52,7 @@ const Selenium = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(rowData),
+        body: JSON.stringify(url),
       });
       const data = await response.json();
       console.log(data);

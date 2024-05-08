@@ -37,6 +37,9 @@ class RowData(BaseModel):
     action: str
     actionInput: str
 
+class urlData(BaseModel):
+    url: str
+
 @app.exception_handler(Exception)
 def validation_exception_handler(request, err):
     base_error_message = f"Failed to execute: {request.method}: {request.url}"
@@ -97,9 +100,17 @@ async def download_zip_file(unique_session_id=str):
 
 
 @app.post("/selenium/test")
-async def process_data(data: List[RowData]):
-    print("Received data:", data)
-    return {"message": "Data received successfully"}
+async def process_data(url: urlData):
+    # data: List[RowData]
+    try:
+        print("Received URL:", url)
+        # print("Received data:", data)
+        # Process the URL and data as needed
+
+        return {"message": "Data received successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error processing data: {str(e)}")
+
 
 
 if __name__ == '__main__':
