@@ -61,7 +61,23 @@ const Selenium = () => {
     }
   };
 
-  const actionOptions = ["send_keys", "clear", "wait time", "click"];
+  const actionOptions = [
+    "send_keys",
+    "clear",
+    "wait time",
+    "click",
+    "getText",
+    "getAttribute",
+    "isEnabled",
+    "isSelected",
+    "submit",
+    "getCssValue",
+    "switchTo",
+    "executeScript",
+    "dragAndDrop",
+    "mouseMove",
+    "doubleClick",
+  ];
 
   const columns = [
     {
@@ -69,7 +85,6 @@ const Selenium = () => {
       field: "by",
       width: 150,
       editable: true,
-      checkboxSelection: true,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: ["NAME", "ID", "XPATH", "CSS_SELECTOR", "CLASS_NAME"],
@@ -93,8 +108,8 @@ const Selenium = () => {
     {
       headerName: "Delete",
       field: "delete",
-      width: 50,
-      height: 100,
+      pinned: "right",
+      maxWidth: 150,
       cellRenderer: (params) => (
         <Button
           variant="contained"
@@ -130,7 +145,7 @@ const Selenium = () => {
             rowHeight={50}
             animateRows={true}
             suppressRowClickSelection={true}
-            defaultColDef={{ flex: 1, editable: true }}
+            defaultColDef={{ flex: 1 }}
           />
         </div>
         <Button
