@@ -13,6 +13,7 @@ from fastapi.responses import FileResponse
 import uuid
 from typing import List
 from fastapi import HTTPException
+from selenium_test import create_sel_func
 
 app = FastAPI()
 app.add_event_handler("startup", app_startup)
@@ -109,6 +110,7 @@ async def process_data(request: Request):
 
         print("Received URL:", url)
         print("Received data:", data)
+        create_sel_func(url,data)
 
         return JSONResponse(content={"message": "Data received successfully"})
     except Exception as e:
