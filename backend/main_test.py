@@ -1,15 +1,12 @@
 import pystache
-
+from constants import selenium_mustache_sample
 
 def test_case_generator(methods):
-    with open(
-            r"C:\Users\simran.maurya\Desktop\OpenAPI-Spec\backend\mustaches\selenium_models_sample.mustache",
-            'r') as f:
+    with open(selenium_mustache_sample, 'r') as f:
         template_str = f.read()
 
     rendered = pystache.render(template_str, methods)
 
-    print(rendered)
     print(rendered)
 
 
