@@ -1,0 +1,9 @@
+from generics import *
+
+def main():
+    {{#operations}}
+    {{#outputs}}{{.}}{{/outputs}} = {{actions}}({{#inputs}}{{.}}{{/inputs}})
+    {{/operations}}
+
+if __name__ == '__main__':
+    main()

@@ -17,3 +17,6 @@ test_summary = os.path.join(root_dir, "test_results.xlsx")
 
 # Mustache test file locust
 locust_mustache_sample = os.path.join(mustaches_dir, r'locust_models_sample.mustache')
+
+# Mustache test file selenium
+selenium_mustache_sample = os.path.join(mustaches_dir, r'selenium_models_sample.mustache')

@@ -68,7 +68,7 @@ async def upload_and_gen_utc(file: UploadFile = File(...)):
 
 
 @app.post("/home/test")
-async def test(spec_data: SpecData, locust_flag: str | None = None):
+async def test(spec_data: SpecData, locust_flag: str | None = None, selenium_flag: str | None = None):
     try:
         _ = yaml.safe_load(spec_data.spec_content)
     except yaml.YAMLError as e:
@@ -86,7 +86,7 @@ async def test(spec_data: SpecData, locust_flag: str | None = None):
         print("spec_path",spec_data.spec_file_path)
 
         f.write(spec_data.spec_content)
-    test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag)
+    test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag, selenium_flag)
     return {"status": "success"}
 
 @app.get("/home/download-zip")
@@ -109,8 +109,9 @@ async def process_data(request: Request):
             raise HTTPException(status_code=400, detail="Invalid request body")
 
         print("Received URL:", url)
-        print("Received data:", data)
-        create_sel_func(url,data)
+        print("Received data:", type(data))
+        await create_sel_func(url,data)
+        # should be awaited in BG
 
         return JSONResponse(content={"message": "Data received successfully"})
     except Exception as e:

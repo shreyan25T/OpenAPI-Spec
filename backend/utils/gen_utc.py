@@ -4,7 +4,7 @@ import pystache
 from openapi_parser import parse
 import zipfile
 import constants
-from constants import test_mustache_sample, test_dir,locust_mustache_sample
+from constants import test_mustache_sample, test_dir,locust_mustache_sample,selenium_mustache_sample
 from utils.parser_utils import camel_to_snake, get_schema_payload
 
 def create_zip_file(zip_folder_path):
@@ -22,7 +22,7 @@ def create_zip_file(zip_folder_path):
     print("ZIPPING OUT")
     return zip_file_path
 
-def test_case_generator(yaml_file,output_path,locust_flag):
+def test_case_generator(yaml_file,output_path,locust_flag,selenium_flag):
 
     content = parse(yaml_file)
     print("CONTENT",yaml_file)
@@ -32,6 +32,10 @@ def test_case_generator(yaml_file,output_path,locust_flag):
 
     if locust_flag is not None:
         with open(locust_mustache_sample, 'r') as f:
+            template_str = f.read()
+    
+    if selenium_flag is not None:
+        with open(selenium_mustache_sample, 'r') as f:
             template_str = f.read()
 
     for tag in content.tags:
@@ -55,6 +59,9 @@ def test_case_generator(yaml_file,output_path,locust_flag):
                                 type_f, payload_p = 'dict', {}
 
                             if locust_flag is not None and res.code != 200:
+                                continue
+
+                            if selenium_flag is not None and res.code != 200:
                                 continue
 
                             item.append({

@@ -52,6 +52,7 @@ const Selenium = () => {
       const requestData = {
         url: url,
         data: rowData,
+        dropdown1 : dropDown
       };
 
       const response = await axios.post("http://127.0.0.1:8000/selenium/test", requestData, {
