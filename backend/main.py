@@ -14,6 +14,8 @@ import uuid
 from typing import List
 from fastapi import HTTPException
 from selenium_test import create_sel_func
+from utils.selenium_gen import generate_code
+import pandas as pd
 
 app = FastAPI()
 app.add_event_handler("startup", app_startup)
@@ -97,25 +99,21 @@ async def download_zip_file(unique_session_id=str):
     print("ZIP path",zip_file_path)
     return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')
 
-
 @app.post("/selenium/test")
 async def process_data(request: Request):
-    try:
-        request_body = await request.json()
-        url = request_body.get("url")  
-        data = request_body.get("data")
+    received_json = await request.json()
+    received_data = received_json['data']
 
-        if url is None or data is None:
-            raise HTTPException(status_code=400, detail="Invalid request body")
+    # Process the received data
+    df = pd.DataFrame(received_data)
+    if 'actionInput' not in df.columns:
+        df['actionInput'] = ''
+    df['actionInput'].fillna('', inplace=True)
+    generate_code({"operations": df.fillna('').to_dict(orient='records')})
 
-        print("Received URL:", url)
-        print("Received data:", type(data))
-        await create_sel_func(url,data)
-        # should be awaited in BG
 
-        return JSONResponse(content={"message": "Data received successfully"})
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error processing data: {str(e)}")
+
+    return {"status": "success", "message": "Selenium script generated"}
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { Button, MenuItem, Select, TextField } from "@mui/material";
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
@@ -8,12 +8,12 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 
-
 import "../assests/style.css";
 
 const Selenium = () => {
   const gridRef = useRef();
   const [url, setUrl] = useState("");
+  const [driver, setDriver] = useState("Windows");
   const [rowData, setRowData] = useState([
     {
       id: 1,
@@ -51,8 +51,8 @@ const Selenium = () => {
     try {
       const requestData = {
         url: url,
+        driver: driver, // Include the selected driver in the request data
         data: rowData,
-        dropdown1 : dropDown
       };
 
       const response = await axios.post("http://127.0.0.1:8000/selenium/test", requestData, {
@@ -66,7 +66,6 @@ const Selenium = () => {
       console.error("Error:", error);
     }
   };
-
 
   const actionOptions = [
     "send_keys",
@@ -140,6 +139,18 @@ const Selenium = () => {
           variant="outlined"
           style={{ marginBottom: "10px" }}
         />
+        <Select
+          label="Select your driver"
+          value={driver}
+          onChange={(e) => setDriver(e.target.value)}
+          fullWidth
+          variant="outlined"
+          style={{ marginBottom: "10px" }}
+        >
+          <MenuItem value="Windows">Windows</MenuItem>
+          <MenuItem value="Linux">Linux</MenuItem>
+          <MenuItem value="Mac">Mac</MenuItem>
+        </Select>
         <div className="ag-theme-quartz" style={{ width: "100%" }}>
           <AgGridReact
             rowData={rowData}
