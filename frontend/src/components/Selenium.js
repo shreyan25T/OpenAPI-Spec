@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button, MenuItem, Select, TextField } from "@mui/material";
-import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
+import { Button, MenuItem, Select, TextField, Snackbar } from "@mui/material";
+import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import Navbar from "./navbar/Navbar";
 import AddIcon from "@mui/icons-material/Add";
@@ -30,6 +30,8 @@ const Selenium = () => {
       actionInput: "password",
     },
   ]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleAddRow = () => {
     const newRow = {
@@ -51,7 +53,7 @@ const Selenium = () => {
     try {
       const requestData = {
         url: url,
-        driver: driver, // Include the selected driver in the request data
+        driver: driver,
         data: rowData,
       };
 
@@ -61,8 +63,11 @@ const Selenium = () => {
         },
       });
       const data = response.data;
-      console.log(data);
+      setSnackbarMessage(data.message);
+      setOpenSnackbar(true);
     } catch (error) {
+      setSnackbarMessage("Error: Unable to generate Selenium script");
+      setOpenSnackbar(true);
       console.error("Error:", error);
     }
   };
@@ -183,6 +188,13 @@ const Selenium = () => {
         >
           Test Button
         </Button>
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
+          onClose={() => setOpenSnackbar(false)}
+          message={snackbarMessage}
+        />
       </div>
     </React.Fragment>
   );

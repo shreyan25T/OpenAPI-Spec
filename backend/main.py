@@ -101,19 +101,23 @@ async def download_zip_file(unique_session_id=str):
 
 @app.post("/selenium/test")
 async def process_data(request: Request):
-    received_json = await request.json()
-    received_data = received_json['data']
+    received_data = await request.json()
+    # Extract the data from the received JSON
+    url = received_data.get('url', '')
+    data = received_data.get('data', [])
 
     # Process the received data
-    df = pd.DataFrame(received_data)
+    df = pd.DataFrame(data)
     if 'actionInput' not in df.columns:
         df['actionInput'] = ''
-    df['actionInput'].fillna('', inplace=True)
-    generate_code({"operations": df.fillna('').to_dict(orient='records')})
 
-
+    df['actionInput'] = df['actionInput'].fillna('')
+    generate_code({"url": url, "operations": df.fillna('').to_dict(orient='records')})
 
     return {"status": "success", "message": "Selenium script generated"}
+
+
+
 
 
 

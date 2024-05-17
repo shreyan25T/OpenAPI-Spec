@@ -1,8 +1,11 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from selenium import webdriver
+
 def main():
     driver = webdriver.Chrome()
+    driver.get("{{url}}")
     {{#operations}}
     driver.find_element(By.{{by}}, "{{byInput}}").{{action}}({{#actionInput}}"{{.}}"{{/actionInput}})
     {{/operations}}
