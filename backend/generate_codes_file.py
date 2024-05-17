@@ -7,9 +7,12 @@ shortWait = 10
 
 def main():
     driver = webdriver.Chrome()
-    driver.get("https://rahulshettyacademy.com/angularpractice/")
-    WebDriverWait(driver, shortWait).until(EC.element_to_be_clickable((By.NAME, "email"))).send_keys("exampleInput")
-    WebDriverWait(driver, shortWait).until(EC.presence_of_element_located((By.CSS_SELECTOR, "exampleInputPassword1"))).send_keys("password")
+    driver.get("http://localhost:3000/selenium")
+    WebDriverWait(driver, shortWait).until(EC.element_to_be_clickable((By.ID, "email"))).send_keys("exampleInput")
+    WebDriverWait(driver, shortWait).until(EC.invisibility_of_element_located((By.ID, "exampleInputPassword1"))).send_keys("password")
+    WebDriverWait(driver, shortWait).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "Enter here"))).clear("Enter here")
+    driver.find_element(By.NAME, "Enter here").send_keys("Enter here")
+    driver.find_element(By.NAME, "Enter here").send_keys("Enter here")
     driver.find_element(By.NAME, "Enter here").send_keys("Enter here")
     driver.close()
 

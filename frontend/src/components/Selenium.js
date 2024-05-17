@@ -180,18 +180,29 @@ const Selenium = () => {
           variant="outlined"
           style={{ marginBottom: "10px" }}
         />
-        <Select
-          label="Select your driver"
-          value={driver}
-          onChange={(e) => setDriver(e.target.value)}
-          fullWidth
-          variant="outlined"
-          style={{ marginBottom: "10px" }}
-        >
-          <MenuItem value="Windows">Windows</MenuItem>
-          <MenuItem value="Linux">Linux</MenuItem>
-          <MenuItem value="Mac">Mac</MenuItem>
-        </Select>
+        <div className="row-flex">
+          <Select
+            label="Select your driver"
+            value={driver}
+            onChange={(e) => setDriver(e.target.value)}
+            variant="outlined"
+          >
+            <MenuItem value="Windows">Windows</MenuItem>
+            <MenuItem value="Linux">Linux</MenuItem>
+            <MenuItem value="Mac">Mac</MenuItem>
+          </Select>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleAddRow}
+            startIcon={<AddIcon />}
+            style={{ marginLeft: "10px" }}
+          >
+            Add Row
+          </Button>
+        </div>
+
+
         <div className="ag-theme-quartz" style={{ width: "100%" }}>
           <AgGridReact
             rowData={rowData}
@@ -207,35 +218,29 @@ const Selenium = () => {
             defaultColDef={{ flex: 1 }}
           />
         </div>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleAddRow}
-          startIcon={<AddIcon />}
-        >
-          Add Row
-        </Button>
 
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={onTestButtonClick}
-          style={{ marginTop: "5px" }}
-        >
-          Test Button
-        </Button>
-
-        {isFileUploaded && (
+        <div className="row-flex">
           <Button
             variant="contained"
             color="secondary"
-            onClick={handleDownloadZip}
-            style={{ marginTop: "5px" }}
+            onClick={onTestButtonClick}
+            style={{ marginTop: "5px",marginBottom:"10px" ,marginRight: "10px" }}
           >
-            Download Zip
+            Test Button
           </Button>
-        )}
+          {isFileUploaded && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleDownloadZip}
+              style={{ marginTop: "5px",marginBottom:"10px" }}
+            >
+              Download Zip
+            </Button>
+          )}
+        </div>
 
+        {/* Snackbar for displaying messages */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}
@@ -245,6 +250,7 @@ const Selenium = () => {
       </div>
     </React.Fragment>
   );
+
 };
 
 export default Selenium;
