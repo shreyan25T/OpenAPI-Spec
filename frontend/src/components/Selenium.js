@@ -124,7 +124,7 @@ const Selenium = () => {
       editable: true,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: ["element_to_be_clickable", "visibility_of_element_located", "presence_of_element_located", "invisibility_of_element_located"],
+        values: ["","element_to_be_clickable", "visibility_of_element_located", "presence_of_element_located", "invisibility_of_element_located"],
       },
     },
     {
