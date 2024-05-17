@@ -5,6 +5,7 @@ from pathlib import Path
 root_dir = str(Path(__file__).parent)
 mustaches_dir = os.path.join(root_dir, r"mustaches")
 test_dir = os.path.join(root_dir, r"tests")
+sel_test_dir = os.path.join(root_dir, r"sel_tests")
 sample_dir = os.path.join(root_dir, r"samples")
 download_dir = os.path.join(root_dir, r"downloads")
 

@@ -81,28 +81,6 @@ const OpenAPISpecReader = () => {
     }
   };
 
-  //   const handleDownloadZip = async () => {
-  //     try {
-  //       const response = await axios.post(
-  //         "http://127.0.0.1:8000/home/download-zip",
-  //         { spec_content: specData, spec_file_path: specPath, spec_uuid: uuId },
-  //         {
-  //           responseType: "blob",
-  //         }
-  //       );
-
-  //       const url = window.URL.createObjectURL(new Blob([response.data]));
-  //       const link = document.createElement("a");
-  //       link.href = url;
-  //       link.setAttribute("download", "test_files.zip");
-  //       document.body.appendChild(link);
-  //       link.click();
-  //       document.body.removeChild(link);
-  //     } catch (error) {
-  //       console.error("Error downloading zip file:", error);
-  //     }
-  //   };
-
   const handleDownloadZip = async () => {
     try {
       const response = await axios.get(

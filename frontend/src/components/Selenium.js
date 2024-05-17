@@ -17,6 +17,7 @@ const Selenium = () => {
   const [rowData, setRowData] = useState([
     {
       id: 1,
+      byWait:"",
       by: "NAME",
       byInput: "email",
       action: "send_keys",
@@ -24,6 +25,7 @@ const Selenium = () => {
     },
     {
       id: 2,
+      byWait:"",
       by: "ID",
       byInput: "exampleInputPassword1",
       action: "send_keys",
@@ -32,6 +34,8 @@ const Selenium = () => {
   ]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const [generatedUuid, setGeneratedUuid] = useState("");
 
   const handleAddRow = () => {
     const newRow = {
@@ -63,7 +67,10 @@ const Selenium = () => {
         },
       });
       const data = response.data;
+      setGeneratedUuid(data.uuid);
+      console.log(generatedUuid)
       setSnackbarMessage(data.message);
+      setIsFileUploaded(true);
       setOpenSnackbar(true);
     } catch (error) {
       setSnackbarMessage("Error: Unable to generate Selenium script");
@@ -71,6 +78,25 @@ const Selenium = () => {
       console.error("Error:", error);
     }
   };
+
+  const handleDownloadZip = async () => {
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/selenium/download-zip?unique_session_id=${encodeURIComponent(generatedUuid)}`, {
+            responseType: "blob",
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "test_files.zip");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error("Error downloading zip file:", error);
+    }
+};
+
 
   const actionOptions = [
     "send_keys",
@@ -91,6 +117,16 @@ const Selenium = () => {
   ];
 
   const columns = [
+    {
+      headerName: "ByWait",
+      field: "byWait",
+      width: 150,
+      editable: true,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: ["element_to_be_clickable", "visibility_of_element_located", "presence_of_element_located", "invisibility_of_element_located"],
+      },
+    },
     {
       headerName: "By",
       field: "by",
@@ -188,6 +224,17 @@ const Selenium = () => {
         >
           Test Button
         </Button>
+
+        {isFileUploaded && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleDownloadZip}
+            style={{ marginTop: "5px" }}
+          >
+            Download Zip
+          </Button>
+        )}
 
         <Snackbar
           open={openSnackbar}

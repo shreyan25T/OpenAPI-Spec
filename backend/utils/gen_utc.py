@@ -8,6 +8,7 @@ from constants import test_mustache_sample, test_dir,locust_mustache_sample,sele
 from utils.parser_utils import camel_to_snake, get_schema_payload
 
 def create_zip_file(zip_folder_path):
+    os.makedirs(zip_folder_path, exist_ok=True)
     zip_file_path = os.path.join(zip_folder_path, 'test_files.zip')
     if os.path.exists(zip_file_path):
         print("File Present, so Deleting it..")
@@ -22,7 +23,27 @@ def create_zip_file(zip_folder_path):
     print("ZIPPING OUT")
     return zip_file_path
 
-def test_case_generator(yaml_file,output_path,locust_flag,selenium_flag):
+def create_zip_file_sel(zip_folder_path):
+    # Create the directory if it doesn't exist
+    os.makedirs(zip_folder_path, exist_ok=True)
+
+    zip_file_path = os.path.join(zip_folder_path, 'test_files.zip')
+    if os.path.exists(zip_file_path):
+        print("File Present, so Deleting it..")
+        os.remove(zip_file_path)
+
+    print("ZIPPING IN")
+    with zipfile.ZipFile(zip_file_path, 'w') as zipf:
+        for folder, _, files in os.walk(zip_folder_path):
+            for file in files:
+                if '.zip' not in file:
+                    zipf.write(os.path.join(folder, file), arcname=file)
+
+        zipf.write('generate_codes_file.py', arcname='generate_codes_file.py')
+    print("ZIPPING OUT")
+    return zip_file_path
+
+def test_case_generator(yaml_file,output_path,locust_flag):
 
     content = parse(yaml_file)
     print("CONTENT",yaml_file)
@@ -33,10 +54,7 @@ def test_case_generator(yaml_file,output_path,locust_flag,selenium_flag):
     if locust_flag is not None:
         with open(locust_mustache_sample, 'r') as f:
             template_str = f.read()
-    
-    if selenium_flag is not None:
-        with open(selenium_mustache_sample, 'r') as f:
-            template_str = f.read()
+
 
     for tag in content.tags:
         methods = {
@@ -59,9 +77,6 @@ def test_case_generator(yaml_file,output_path,locust_flag,selenium_flag):
                                 type_f, payload_p = 'dict', {}
 
                             if locust_flag is not None and res.code != 200:
-                                continue
-
-                            if selenium_flag is not None and res.code != 200:
                                 continue
 
                             item.append({

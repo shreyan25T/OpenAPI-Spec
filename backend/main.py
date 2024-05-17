@@ -8,7 +8,7 @@ from utils.events import app_startup
 from fastapi import FastAPI, UploadFile, File,Request
 from pydantic import BaseModel
 from constants import *
-from utils.gen_utc import create_zip_file
+from utils.gen_utc import create_zip_file,create_zip_file_sel
 from fastapi.responses import FileResponse
 import uuid
 from typing import List
@@ -70,7 +70,7 @@ async def upload_and_gen_utc(file: UploadFile = File(...)):
 
 
 @app.post("/home/test")
-async def test(spec_data: SpecData, locust_flag: str | None = None, selenium_flag: str | None = None):
+async def test(spec_data: SpecData, locust_flag: str | None = None):
     try:
         _ = yaml.safe_load(spec_data.spec_content)
     except yaml.YAMLError as e:
@@ -88,7 +88,7 @@ async def test(spec_data: SpecData, locust_flag: str | None = None, selenium_fla
         print("spec_path",spec_data.spec_file_path)
 
         f.write(spec_data.spec_content)
-    test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag, selenium_flag)
+    test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag)
     return {"status": "success"}
 
 @app.get("/home/download-zip")
@@ -102,20 +102,29 @@ async def download_zip_file(unique_session_id=str):
 @app.post("/selenium/test")
 async def process_data(request: Request):
     received_data = await request.json()
+    uuid_str = str(uuid.uuid4())
     # Extract the data from the received JSON
     url = received_data.get('url', '')
     data = received_data.get('data', [])
-
+    print("data",data)
     # Process the received data
     df = pd.DataFrame(data)
     if 'actionInput' not in df.columns:
         df['actionInput'] = ''
 
     df['actionInput'] = df['actionInput'].fillna('')
+    df['useWait'] = df['byWait'].str.len() > 0
     generate_code({"url": url, "operations": df.fillna('').to_dict(orient='records')})
 
-    return {"status": "success", "message": "Selenium script generated"}
+    return {"status": "success", "message": "Selenium script generated", "uuid": uuid_str}
 
+@app.get("/selenium/download-zip")
+async def download_zip_file(unique_session_id=str):
+    print("UNIQUE",unique_session_id)
+    zip_folder_path = os.path.join(sel_test_dir, unique_session_id)
+    zip_file_path = create_zip_file_sel(zip_folder_path)
+    print("ZIP path",zip_file_path)
+    return FileResponse(zip_file_path, media_type='application/zip', filename='test_files.zip')
 
 
 

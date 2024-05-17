@@ -1,6 +1,7 @@
 import pystache
 from constants import selenium_mustache_sample
 
+
 def generate_code(methods):
     with open(selenium_mustache_sample, 'r') as f:
         template_str = f.read()
