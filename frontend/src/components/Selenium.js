@@ -17,7 +17,7 @@ const Selenium = () => {
   const [rowData, setRowData] = useState([
     {
       id: 1,
-      byWait:"",
+      byWait: "",
       by: "NAME",
       byInput: "email",
       action: "send_keys",
@@ -25,7 +25,7 @@ const Selenium = () => {
     },
     {
       id: 2,
-      byWait:"",
+      byWait: "",
       by: "ID",
       byInput: "exampleInputPassword1",
       action: "send_keys",
@@ -61,14 +61,18 @@ const Selenium = () => {
         data: rowData,
       };
 
-      const response = await axios.post("http://127.0.0.1:8000/selenium/test", requestData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/selenium/test",
+        requestData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = response.data;
       setGeneratedUuid(data.uuid);
-      console.log(generatedUuid)
+      console.log(generatedUuid);
       setSnackbarMessage(data.message);
       setIsFileUploaded(true);
       setOpenSnackbar(true);
@@ -81,22 +85,26 @@ const Selenium = () => {
 
   const handleDownloadZip = async () => {
     try {
-        const response = await axios.get(`http://127.0.0.1:8000/selenium/download-zip?unique_session_id=${encodeURIComponent(generatedUuid)}`, {
-            responseType: "blob",
-        });
+      const response = await axios.get(
+        `http://127.0.0.1:8000/selenium/download-zip?unique_session_id=${encodeURIComponent(
+          generatedUuid
+        )}`,
+        {
+          responseType: "blob",
+        }
+      );
 
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "test_files.zip");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "test_files.zip");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
-        console.error("Error downloading zip file:", error);
+      console.error("Error downloading zip file:", error);
     }
-};
-
+  };
 
   const actionOptions = [
     "send_keys",
@@ -124,7 +132,13 @@ const Selenium = () => {
       editable: true,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: ["","element_to_be_clickable", "visibility_of_element_located", "presence_of_element_located", "invisibility_of_element_located"],
+        values: [
+          "",
+          "element_to_be_clickable",
+          "visibility_of_element_located",
+          "presence_of_element_located",
+          "invisibility_of_element_located",
+        ],
       },
     },
     {
@@ -171,21 +185,24 @@ const Selenium = () => {
   return (
     <React.Fragment>
       <Navbar />
-      <div className="grid grid-cols-1 gap-2 justify-items-center mt-20">
-        <TextField
-          label="Add driver.get URL here"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          fullWidth
-          variant="outlined"
-          style={{ marginBottom: "10px" }}
-        />
-        <div className="row-flex">
+      <div className="grid grid-cols-1 gap-2 justify-items-center mt-20" style={{ padding: "10px" }}>
+        <div className="row-flex" style={{ display: "flex", width: "100%" }}>
+
+          <TextField
+            label="Add driver.get URL here"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            fullWidth
+            variant="outlined"
+            InputProps={{ style: { height: "45px" } }}
+            style={{ flex: 7, marginRight: "10px" }}
+          />
           <Select
             label="Select your driver"
             value={driver}
             onChange={(e) => setDriver(e.target.value)}
             variant="outlined"
+            style={{ flex: 3.3, height: "45px", marginRight: "7px" }}
           >
             <MenuItem value="Windows">Windows</MenuItem>
             <MenuItem value="Linux">Linux</MenuItem>
@@ -196,14 +213,16 @@ const Selenium = () => {
             color="secondary"
             onClick={handleAddRow}
             startIcon={<AddIcon />}
-            style={{ marginLeft: "10px" }}
+            style={{ height: "45px", flex: 0.7 }}
           >
-            Add Row
+            Add
           </Button>
         </div>
 
-
-        <div className="ag-theme-quartz" style={{ width: "100%" }}>
+        <div
+          className="ag-theme-quartz"
+          style={{ width: "100%", marginTop: "10px" }}
+        >
           <AgGridReact
             rowData={rowData}
             getRowNodeId={(data) => data.id}
@@ -219,12 +238,15 @@ const Selenium = () => {
           />
         </div>
 
-        <div className="row-flex">
+        <div
+          className="row-flex"
+          style={{ display: "flex", marginTop: "10px" }}
+        >
           <Button
             variant="contained"
             color="secondary"
             onClick={onTestButtonClick}
-            style={{ marginTop: "5px",marginBottom:"10px" ,marginRight: "10px" }}
+            style={{ marginRight: "10px" }}
           >
             Test Button
           </Button>
@@ -233,14 +255,12 @@ const Selenium = () => {
               variant="contained"
               color="secondary"
               onClick={handleDownloadZip}
-              style={{ marginTop: "5px",marginBottom:"10px" }}
             >
               Download Zip
             </Button>
           )}
         </div>
 
-        {/* Snackbar for displaying messages */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}
@@ -250,7 +270,6 @@ const Selenium = () => {
       </div>
     </React.Fragment>
   );
-
 };
 
 export default Selenium;

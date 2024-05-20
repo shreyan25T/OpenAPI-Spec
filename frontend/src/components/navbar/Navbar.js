@@ -43,7 +43,7 @@ const Navbar = () => {
 
   const handleNavigate = () => {
     navigate('/dashboard');
-  
+
   }
   return (
     <AppBar position="static" color="secondary">
@@ -54,9 +54,10 @@ const Navbar = () => {
           alt="Logo"
           src={logo}
         />
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          OPENAPI SPEC APP
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontFamily: 'Arial, sans-serif' }}>
+          TA Test Tool
         </Typography>
+
         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
           <IconButton
             size="large"
@@ -108,7 +109,7 @@ const Navbar = () => {
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
           >
-           {settings.map((setting) => (
+            {settings.map((setting) => (
               <MenuItem key={setting} onClick={setting === 'Logout' ? handleLogout : handleNavigate}>
                 <Typography variant="body1">{setting}</Typography>
               </MenuItem>

@@ -4,9 +4,10 @@
     --ag-header-background-color:#F7901D;
     --ag-header-cell-hover-background-color:#ED8109;
     --ag-header-cell-moving-background-color: #ED8109;
+
 }
 .ag-theme-quartz .ag-header {
-    font-family: cursive;
+    font-family: Arial, sans-serif;
 }
 .ag-theme-quartz .ag-header-group-cell {
     font-weight: normal;

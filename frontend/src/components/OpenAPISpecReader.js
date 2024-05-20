@@ -108,7 +108,7 @@ const OpenAPISpecReader = () => {
     <React.Fragment>
       <Navbar />
 
-      <div className="grid grid-cols-1 gap-2 justify-items-center mt-20">
+      <div className="grid grid-cols-1 gap-2 justify-items-center mt-20" style={{ padding: "10px" }}>
         <ToastContainer />
         <Box
           display={"flex"}
