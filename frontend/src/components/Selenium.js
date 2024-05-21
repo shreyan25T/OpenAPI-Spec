@@ -41,9 +41,9 @@ const Selenium = () => {
     const newRow = {
       id: rowData.length + 1,
       by: "NAME",
-      byInput: "Enter here",
+      byInput: "",
       action: "send_keys",
-      actionInput: "Enter here",
+      actionInput: "",
     };
     setRowData([...rowData, newRow]);
   };
@@ -158,7 +158,8 @@ const Selenium = () => {
       width: 150,
       editable: true,
       cellEditor: "agSelectCellEditor",
-      cellEditorParams: { values: actionOptions },
+      // cellEditorPopup: true,
+      cellEditorParams: { values: actionOptions, valueListMaxHeight: 320 },
     },
     {
       headerName: "ActionInput",
@@ -185,9 +186,11 @@ const Selenium = () => {
   return (
     <React.Fragment>
       <Navbar />
-      <div className="grid grid-cols-1 gap-2 justify-items-center mt-20" style={{ padding: "10px" }}>
+      <div
+        className="grid grid-cols-1 gap-2 justify-items-center mt-20"
+        style={{ padding: "10px" }}
+      >
         <div className="row-flex" style={{ display: "flex", width: "100%" }}>
-
           <TextField
             label="Add driver.get URL here"
             value={url}

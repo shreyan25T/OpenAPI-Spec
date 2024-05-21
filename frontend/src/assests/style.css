@@ -1,18 +1,21 @@
 .ag-theme-quartz {
-    --ag-header-height: 30px;
-    --ag-header-foreground-color: white;
-    --ag-header-background-color:#F7901D;
-    --ag-header-cell-hover-background-color:#ED8109;
-    --ag-header-cell-moving-background-color: #ED8109;
-
+  --ag-header-height: 30px;
+  --ag-header-foreground-color: white;
+  --ag-header-background-color: #f7901d;
+  --ag-header-cell-hover-background-color: #ed8109;
+  --ag-header-cell-moving-background-color: #ed8109;
 }
 .ag-theme-quartz .ag-header {
-    font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 .ag-theme-quartz .ag-header-group-cell {
-    font-weight: normal;
-    font-size: 22px;
+  font-weight: normal;
+  font-size: 22px;
 }
 .ag-theme-quartz .ag-header-cell {
-    font-size: 18px;
+  font-size: 18px;
+}
+.ag-cell-edit-input {
+  max-height: 250px; /* Adjust the height as needed */
+  overflow-y: auto;
 }
