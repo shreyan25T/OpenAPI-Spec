@@ -1,6 +1,13 @@
 import React, { useState, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Button, MenuItem, Select, TextField, Snackbar } from "@mui/material";
+import {
+  Button,
+  MenuItem,
+  Select,
+  TextField,
+  Tooltip,
+  Snackbar,
+} from "@mui/material";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import Navbar from "./navbar/Navbar";
@@ -192,7 +199,7 @@ const Selenium = () => {
       >
         <div className="row-flex" style={{ display: "flex", width: "100%" }}>
           <TextField
-            label="Add driver.get URL here"
+            label="Add Site URL here"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             fullWidth
@@ -211,6 +218,17 @@ const Selenium = () => {
             <MenuItem value="Linux">Linux</MenuItem>
             <MenuItem value="Mac">Mac</MenuItem>
           </Select>
+          <Tooltip title="Enter the URL for the driver">
+            <TextField
+              label="Add your local driver path here"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              fullWidth
+              variant="outlined"
+              InputProps={{ style: { height: "45px" } }}
+              style={{ flex: 7, marginRight: "10px" }}
+            />
+          </Tooltip>
           <Button
             variant="contained"
             color="secondary"
