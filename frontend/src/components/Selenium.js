@@ -7,6 +7,9 @@ import {
   TextField,
   Tooltip,
   Snackbar,
+  Typography,
+  Link,
+  Box,
 } from "@mui/material";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
@@ -20,6 +23,7 @@ import "../assests/style.css";
 const Selenium = () => {
   const gridRef = useRef();
   const [url, setUrl] = useState("");
+  const [pathDriver, setPathDriver] = useState("");
   const [driver, setDriver] = useState("Windows");
   const [rowData, setRowData] = useState([
     {
@@ -64,6 +68,7 @@ const Selenium = () => {
     try {
       const requestData = {
         url: url,
+        pathDriver: pathDriver,
         driver: driver,
         data: rowData,
       };
@@ -198,6 +203,44 @@ const Selenium = () => {
         style={{ padding: "10px" }}
       >
         <div className="row-flex" style={{ display: "flex", width: "100%" }}>
+          <Tooltip title="Enter the URL for the driver">
+            <TextField
+              label="Add your local driver path here"
+              value={pathDriver}
+              onChange={(e) => setPathDriver(e.target.value)}
+              fullWidth
+              variant="outlined"
+              InputProps={{ style: { height: "45px" } }}
+              style={{ flex: 6, marginRight: "10px" }}
+            />
+          </Tooltip>
+          <Box
+            sx={{
+              flex: 6,
+              marginTop: "10px",
+              backgroundColor: "rgba(247, 144, 29, 0.1)",
+              padding: "5px",
+              borderRadius: "6px",
+            }}
+          >
+            <Typography variant="body1">
+              If driver URL not there, please{" "}
+              <Link
+                href="https://developer.chrome.com/docs/chromedriver/downloads"
+                target="_blank"
+                rel="noopener"
+                sx={{ color: "blue" }}
+              >
+                click here
+              </Link>{" "}
+              to download
+            </Typography>
+          </Box>
+        </div>
+        <div
+          className="row-flex"
+          style={{ display: "flex", width: "100%", paddingTop: "10px" }}
+        >
           <TextField
             label="Add Site URL here"
             value={url}
@@ -218,17 +261,7 @@ const Selenium = () => {
             <MenuItem value="Linux">Linux</MenuItem>
             <MenuItem value="Mac">Mac</MenuItem>
           </Select>
-          <Tooltip title="Enter the URL for the driver">
-            <TextField
-              label="Add your local driver path here"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              fullWidth
-              variant="outlined"
-              InputProps={{ style: { height: "45px" } }}
-              style={{ flex: 7, marginRight: "10px" }}
-            />
-          </Tooltip>
+
           <Button
             variant="contained"
             color="secondary"
@@ -239,7 +272,6 @@ const Selenium = () => {
             Add
           </Button>
         </div>
-
         <div
           className="ag-theme-quartz"
           style={{ width: "100%", marginTop: "10px" }}

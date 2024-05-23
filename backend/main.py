@@ -105,6 +105,7 @@ async def process_data(request: Request):
     uuid_str = str(uuid.uuid4())
     # Extract the data from the received JSON
     url = received_data.get('url', '')
+    pathDriver = received_data.get('pathDriver', '')
     data = received_data.get('data', [])
     print("data",data)
     # Process the received data
@@ -114,7 +115,7 @@ async def process_data(request: Request):
 
     df['actionInput'] = df['actionInput'].fillna('')
     df['useWait'] = df['byWait'].str.len() > 0
-    generate_code({"url": url, "operations": df.fillna('').to_dict(orient='records')})
+    generate_code({"url": url,"pathDriver":pathDriver ,"operations": df.fillna('').to_dict(orient='records')})
 
     return {"status": "success", "message": "Selenium script generated", "uuid": uuid_str}
 
