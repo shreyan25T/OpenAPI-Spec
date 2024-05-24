@@ -203,7 +203,6 @@ const Selenium = () => {
         style={{ padding: "10px" }}
       >
         <div className="row-flex" style={{ display: "flex", width: "100%" }}>
-          <Tooltip title="Enter the URL for the driver">
             <TextField
               label="Add your local driver path here"
               value={pathDriver}
@@ -213,27 +212,26 @@ const Selenium = () => {
               InputProps={{ style: { height: "45px" } }}
               style={{ flex: 6, marginRight: "10px" }}
             />
-          </Tooltip>
           <Box
             sx={{
               flex: 6,
-              marginTop: "10px",
-              backgroundColor: "rgba(247, 144, 29, 0.1)",
-              padding: "5px",
-              borderRadius: "6px",
+              backgroundColor: 'rgba(247, 144, 29, 0.1)',
+              p: 1,
+              borderRadius: 2,
+              boxShadow: 1,
             }}
           >
-            <Typography variant="body1">
-              If driver URL not there, please{" "}
+            <Typography variant="body1" sx={{ color: 'text.primary' }}>
+              If the driver URL is not available, please{' '}
               <Link
                 href="https://developer.chrome.com/docs/chromedriver/downloads"
                 target="_blank"
                 rel="noopener"
-                sx={{ color: "blue" }}
+                sx={{ color: 'blue', textDecoration: 'underline' }}
               >
                 click here
-              </Link>{" "}
-              to download
+              </Link>{' '}
+              to download it.
             </Typography>
           </Box>
         </div>
