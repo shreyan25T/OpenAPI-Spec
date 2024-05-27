@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography, IconButton, Box } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "./navbar/Navbar";
-import { Box } from "@mui/material";
-
-
 
 const OpenAPISpecReader = () => {
   const { user, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
@@ -18,15 +17,12 @@ const OpenAPISpecReader = () => {
   const [uuId, setuuId] = useState("");
   const [fileName, setFileName] = useState("No file chosen");
   const [isFileUploaded, setIsFileUploaded] = useState(false);
-
-  // if (isAuthenticated) throw new Error("ERROR CAUGHT");
+  const [testCases, setTestCases] = useState([{ url: "", statusCode: "", response: "" }]);
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append("file", file);
-
-    // Set the file name for display
     setFileName(file.name);
 
     try {
@@ -46,10 +42,8 @@ const OpenAPISpecReader = () => {
         setSpecData(fileContent);
         setspecPath(response.data.data.spec_file_path);
         setuuId(response.data.data.spec_uuid);
-        console.log("specPath", response.data.data.spec_uuid);
-        console.log(response.data.data);
       } else {
-        toast.error(response.data.message); // Show error message from backend
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -104,25 +98,34 @@ const OpenAPISpecReader = () => {
     }
   };
 
+  const handleAddTestCase = () => {
+    setTestCases([...testCases, { url: "", statusCode: "", response: "" }]);
+  };
+
+  const handleDeleteTestCase = (index) => {
+    const newTestCases = testCases.filter((_, i) => i !== index);
+    setTestCases(newTestCases);
+  };
+
+  const handleTestCaseChange = (index, field, value) => {
+    const newTestCases = [...testCases];
+    newTestCases[index][field] = value;
+    setTestCases(newTestCases);
+  };
+
   return (
     <React.Fragment>
       <Navbar />
-
       <div className="grid grid-cols-1 gap-2 justify-items-center mt-20" style={{ padding: "10px" }}>
         <ToastContainer />
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
+        <Box display={"flex"} alignItems={"center"} gap={"4px"} flexDirection={"column"}>
           <input
             type="file"
             onChange={handleUpload}
             style={{ display: "none" }}
             id="upload-file-input"
           />
-          <h3>Hi {user.name} you can generate  pytest files here</h3>
+          <h3>Hi {user.name}, you can generate pytest files here</h3>
           <label htmlFor="upload-file-input">
             <Button
               variant="contained"
@@ -144,12 +147,36 @@ const OpenAPISpecReader = () => {
           onChange={(e) => setSpecData(e.target.value)}
           fullWidth
         />
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
+        <Typography variant="h6">Test Cases</Typography>
+        {testCases.map((testCase, index) => (
+          <Box key={index} display="flex" alignItems="center" gap="8px" marginBottom="8px">
+            <TextField
+              label="URL endpoint"
+              variant="outlined"
+              value={testCase.url}
+              onChange={(e) => handleTestCaseChange(index, "url", e.target.value)}
+            />
+            <TextField
+              label="Status Code"
+              variant="outlined"
+              value={testCase.statusCode}
+              onChange={(e) => handleTestCaseChange(index, "statusCode", e.target.value)}
+            />
+            <TextField
+              label="Response"
+              variant="outlined"
+              value={testCase.response}
+              onChange={(e) => handleTestCaseChange(index, "response", e.target.value)}
+            />
+            <IconButton color="secondary" onClick={() => handleDeleteTestCase(index)}>
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        ))}
+        <Button variant="contained" color="secondary" onClick={handleAddTestCase} startIcon={<AddCircleIcon />}>
+          Add Test Case
+        </Button>
+        <Box display={"flex"} alignItems={"center"} gap={"4px"} flexDirection={"column"}>
           <Button variant="contained" color="secondary" onClick={handleTest}>
             Test Spec
           </Button>
@@ -164,17 +191,10 @@ const OpenAPISpecReader = () => {
             </Button>
           )}
         </Box>
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
+        <Box display={"flex"} alignItems={"center"} gap={"4px"} flexDirection={"column"}>
           <Typography variant="body1">{testResult}</Typography>
         </Box>
-
       </div>
-
     </React.Fragment>
   );
 };
