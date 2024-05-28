@@ -8,6 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "./navbar/Navbar";
+import HttpIcon from "@mui/icons-material/Http";
+import InputAdornment from "@mui/material/InputAdornment";
 
 const OpenAPISpecReader = () => {
   const { user, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
@@ -153,29 +155,50 @@ const OpenAPISpecReader = () => {
             <TextField
               label="URL endpoint"
               variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <HttpIcon />
+                  </InputAdornment>
+                ),
+              }}
               value={testCase.url}
               onChange={(e) => handleTestCaseChange(index, "url", e.target.value)}
             />
             <TextField
               label="Status Code"
               variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <HttpIcon />
+                  </InputAdornment>
+                ),
+              }}
               value={testCase.statusCode}
               onChange={(e) => handleTestCaseChange(index, "statusCode", e.target.value)}
             />
             <TextField
               label="Response"
               variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <HttpIcon />
+                  </InputAdornment>
+                ),
+              }}
               value={testCase.response}
               onChange={(e) => handleTestCaseChange(index, "response", e.target.value)}
             />
             <IconButton color="secondary" onClick={() => handleDeleteTestCase(index)}>
               <DeleteIcon />
             </IconButton>
+            <IconButton color="secondary" onClick={handleAddTestCase}>
+              <AddCircleIcon />
+            </IconButton>
           </Box>
         ))}
-        <Button variant="contained" color="secondary" onClick={handleAddTestCase} startIcon={<AddCircleIcon />}>
-          Add Test Case
-        </Button>
         <Box display={"flex"} alignItems={"center"} gap={"4px"} flexDirection={"column"}>
           <Button variant="contained" color="secondary" onClick={handleTest}>
             Test Spec
