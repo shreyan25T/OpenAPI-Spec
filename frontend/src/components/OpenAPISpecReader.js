@@ -12,7 +12,7 @@ import HttpIcon from "@mui/icons-material/Http";
 import InputAdornment from "@mui/material/InputAdornment";
 
 const OpenAPISpecReader = () => {
-  const { user, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
+  const { user } = useAuth0();
   const [specData, setSpecData] = useState("");
   const [testResult, setTestResult] = useState("");
   const [specPath, setspecPath] = useState("");
@@ -57,7 +57,7 @@ const OpenAPISpecReader = () => {
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/home/test",
-        { spec_content: specData, spec_file_path: specPath, spec_uuid: uuId },
+        { spec_content: specData, spec_file_path: specPath, spec_uuid: uuId ,test_cases: testCases},
         {
           headers: {
             "Content-Type": "application/json",
@@ -115,6 +115,7 @@ const OpenAPISpecReader = () => {
     setTestCases(newTestCases);
   };
 
+
   return (
     <React.Fragment>
       <Navbar />
@@ -150,6 +151,16 @@ const OpenAPISpecReader = () => {
           fullWidth
         />
         <Typography variant="h6">Test Cases</Typography>
+        <Box display="flex" justifyContent="center" marginBottom="16px">
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<AddCircleIcon />}
+            onClick={handleAddTestCase}
+          >
+            Add Test Case
+          </Button>
+        </Box>
         {testCases.map((testCase, index) => (
           <Box key={index} display="flex" alignItems="center" gap="8px" marginBottom="8px">
             <TextField
@@ -194,11 +205,9 @@ const OpenAPISpecReader = () => {
             <IconButton color="secondary" onClick={() => handleDeleteTestCase(index)}>
               <DeleteIcon />
             </IconButton>
-            <IconButton color="secondary" onClick={handleAddTestCase}>
-              <AddCircleIcon />
-            </IconButton>
           </Box>
         ))}
+
         <Box display={"flex"} alignItems={"center"} gap={"4px"} flexDirection={"column"}>
           <Button variant="contained" color="secondary" onClick={handleTest}>
             Test Spec
@@ -217,6 +226,7 @@ const OpenAPISpecReader = () => {
         <Box display={"flex"} alignItems={"center"} gap={"4px"} flexDirection={"column"}>
           <Typography variant="body1">{testResult}</Typography>
         </Box>
+
       </div>
     </React.Fragment>
   );

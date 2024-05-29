@@ -16,6 +16,7 @@ from fastapi import HTTPException
 from selenium_test import create_sel_func
 from utils.selenium_gen import generate_code
 import pandas as pd
+from typing import Optional
 
 app = FastAPI()
 app.add_event_handler("startup", app_startup)
@@ -32,6 +33,7 @@ class SpecData(BaseModel):
     spec_content: str
     spec_file_path: str
     spec_uuid: str
+    test_cases: Optional[list] = None
 
 class RowData(BaseModel):
     id: int
@@ -86,6 +88,7 @@ async def test(spec_data: SpecData, locust_flag: str | None = None):
     with open(spec_data.spec_file_path, "w") as f:
         print("spec_uuid",spec_data.spec_uuid)
         print("spec_path",spec_data.spec_file_path)
+        print("testcases",spec_data.test_cases)
 
         f.write(spec_data.spec_content)
     test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag)
