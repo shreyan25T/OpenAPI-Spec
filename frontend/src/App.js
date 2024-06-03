@@ -9,6 +9,9 @@ import NotFound from "./components/error/NotFound";
 import CircularProgress from "@mui/material/CircularProgress";
 import DashBoard from "./components/Dashboard";
 import Selenium from "./components/Selenium";
+import PytestOption from "./components/PytestOption";
+import PytestManual from "./components/PytestManual";
+import PytestUpload from "./components/PytestUpload";
 
 import { Box, CssBaseline, StyledEngineProvider } from "@mui/material";
 
@@ -49,7 +52,15 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route
                   path="/home"
-                  element={<ProtectedRoute component={OpenAPISpecReader} />}
+                  element={<ProtectedRoute component={PytestOption} />}
+                />
+                <Route
+                  path="/home/spec"
+                  element={<ProtectedRoute component={PytestUpload} />}
+                />
+                <Route
+                  path="/home/manual"
+                  element={<ProtectedRoute component={PytestManual} />}
                 />
                 <Route
                   path="/locust"
