@@ -97,7 +97,7 @@ async def test(manual_data: ManualTestCases):
     uuid_str = str(uuid.uuid4())
     print("uuid",uuid_str)
     print(manual_data.test_cases)
-
+    
     return {"status": "success"}
 
 
