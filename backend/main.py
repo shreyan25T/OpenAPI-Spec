@@ -35,12 +35,9 @@ class SpecData(BaseModel):
     spec_uuid: str
     test_cases: Optional[list] = None
 
-class RowData(BaseModel):
-    id: int
-    by: str
-    byInput: str
-    action: str
-    actionInput: str
+class ManualTestCases(BaseModel):
+    test_cases: list
+
 
 
 @app.exception_handler(Exception)
@@ -94,6 +91,17 @@ async def test(spec_data: SpecData, locust_flag: str | None = None):
     test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag)
     return {"status": "success"}
 
+# Manual Test cases generation
+@app.post("/home/manual-test")
+async def test(manual_data: ManualTestCases):
+    uuid_str = str(uuid.uuid4())
+    print("uuid",uuid_str)
+    print(manual_data.test_cases)
+
+    return {"status": "success"}
+
+
+# Download ZIP file
 @app.get("/home/download-zip")
 async def download_zip_file(unique_session_id=str):
     print("UNIQUE",unique_session_id)

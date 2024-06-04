@@ -13,55 +13,16 @@ import InputAdornment from "@mui/material/InputAdornment";
 
 const PytestManual = () => {
   const { user } = useAuth0();
-  const [specData, setSpecData] = useState("");
   const [testResult, setTestResult] = useState("");
-  const [specPath, setspecPath] = useState("");
-  const [uuId, setuuId] = useState("");
-  const [fileName, setFileName] = useState("No file chosen");
-  const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [testCases, setTestCases] = useState([
     { url: "", statusCode: "", response: "" },
   ]);
 
-  //   const file = e.target.files[0];
-  //   const formData = new FormData();
-  //   formData.append("file", file);
-  //   setFileName(file.name);
-
-  //   try {
-  //     const response = await axios.post(
-  //       "http://127.0.0.1:8000/home/upload",
-  //       formData,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.data.status === "success") {
-  //       let fileContent = response.data.data.spec_content;
-  //       fileContent = fileContent.replace(/"/g, "");
-  //       setSpecData(fileContent);
-  //       setspecPath(response.data.data.spec_file_path);
-  //       setuuId(response.data.data.spec_uuid);
-  //     } else {
-  //       toast.error(response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error uploading file:", error);
-  //     toast.error("Error uploading file.");
-  //   }
-  // };
-
   const handleTest = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/home/test",
+        "http://127.0.0.1:8000/home/manual-test",
         {
-          spec_content: specData,
-          spec_file_path: specPath,
-          spec_uuid: uuId,
           test_cases: testCases,
         },
         {
@@ -73,7 +34,6 @@ const PytestManual = () => {
 
       if (response.data.status === "success") {
         setTestResult("Test cases got generated successfully.");
-        setIsFileUploaded(true);
       } else {
         setTestResult("Error generating test cases.");
       }
@@ -87,7 +47,7 @@ const PytestManual = () => {
     try {
       const response = await axios.get(
         `http://127.0.0.1:8000/home/download-zip?unique_session_id=${encodeURIComponent(
-          uuId
+          "uuId"
         )}`,
         {
           responseType: "blob",
@@ -219,7 +179,7 @@ const PytestManual = () => {
           <Button variant="contained" color="secondary" onClick={handleTest}>
             Test Spec
           </Button>
-          {isFileUploaded && (
+          {
             <Button
               variant="contained"
               color="secondary"
@@ -228,7 +188,7 @@ const PytestManual = () => {
             >
               Download Test Files
             </Button>
-          )}
+          }
         </Box>
         <Box
           display={"flex"}
