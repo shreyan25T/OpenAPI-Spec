@@ -1,0 +1,796 @@
+openapi: 3.0.0
+info:
+  title: GCash GCoach APIs
+  description: APIs associated with GCash GCoach
+  version: 1.0.0
+servers:
+  - url: Deployed Backend Server
+    description: Development server
+tags:
+  - name: User Management
+    description: Operations related to user management
+  - name: Session Management
+    description: Operations related to session management
+  - name: Chat History Management
+    description: Operations related to chat history management
+  - name: Entrypoint Management
+    description: Operations related to entrypoint management
+  - name: Issue Management
+    description: Operations related to reporting issue
+  - name: AWS API calling Azure Endpoint
+    description: AWS API calling Azure Endpoint
+paths:
+  /ROOT_PREFIX/users:
+    get:
+      tags:
+        - User Management
+      operationId: getUser
+      summary: Endpoint to fetch the name of the user logged in based on the userid
+      description: Fetch name of the user logged in based on the userid.
+      parameters:
+        - name: userid
+          in: query
+          description: uniqueid of user
+          required: true
+          schema:
+            type: string
+            example: '217010000647397352740'
+        - name: entrypoint
+          in: query
+          description: entrypoint of user
+          required: true
+          schema:
+            type: string
+            example: GInvest
+      responses:
+        '200':
+          description: Name of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGet'
+        '400':
+          description: Invalid session data
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - User Management
+      summary: Create a new user
+      operationId: createUser
+      description: Register a new user by providing user details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPost'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userSuccessPost'
+        '400':
+          description: Invalid input data
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/usersupdate:
+    post:
+      tags:
+        - User Management
+      summary: Update a user's details
+      operationId: updateUser
+      description: Modify the details of an existing user by their ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPut'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userSuccessPut'
+        '400':
+          description: Invalid input data
+        '404':
+          description: User not found
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/session:
+    get:
+      tags:
+        - Session Management
+      summary: Endpoint to fetch the session details and their chats
+      description: Fetch the session details and their chats
+      operationId: getSession
+      parameters:
+        - name: entrypoint
+          in: query
+          description: entrypoint of user
+          required: false
+          schema:
+            type: string
+            example: GFunds
+        - name: userid
+          in: query
+          description: userid of user
+          required: false
+          schema:
+            type: string
+            example: '217010000647397352740'
+        - name: sessionid
+          in: query
+          description: sessionid requested by user
+          required: false
+          schema:
+            type: string
+            example: 66e9710afac171e5b55ef0cd
+      responses:
+        '200':
+          description: List of sessions by the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SessionGet'
+        '400':
+          description: Invalid input data
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - Session Management
+      summary: To create a session and return session id
+      description: Creates a session and return session id
+      operationId: createSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionPost'
+      responses:
+        '201':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionSuccessPost'
+        '400':
+          description: Invalid session data
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/sessionupdate:
+    post:
+      tags:
+        - Session Management
+      summary: Update session details
+      operationId: updateSession
+      description: >-
+        Modify the session details like isarchived, isvalid and name of the
+        session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionPut'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionSuccessPut'
+        '400':
+          description: Invalid input data
+        '404':
+          description: Session not found
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/sessiondelete:
+    post:
+      tags:
+        - Session Management
+      summary: Endpoint to delete the session and chats corresponding to it
+      description: Deletes the session details and their chats
+      operationId: deleteSession
+      parameters:
+        - name: sessionid
+          in: query
+          description: sessionid requested by user
+          required: true
+          schema:
+            type: string
+            example: 66e9710afac171e5b55ef0cd
+        - name: type
+          in: query
+          description: clear chat(chat) or clear history(session)
+          required: true
+          schema:
+            type: string
+            example: chat
+      responses:
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/chat:
+    post:
+      tags:
+        - Chat History Management
+      summary: To add chat for a session
+      description: Adds a chat to a session
+      operationId: createChat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatPost'
+      responses:
+        '201':
+          description: Chat added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSuccessPost'
+        '400':
+          description: Invalid session data
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/chatupdate:
+    post:
+      tags:
+        - Chat History Management
+      summary: Update conversation details
+      operationId: updateChat
+      description: >-
+        Modify the conversation details like regenrated answer, feedback and
+        name of the session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatPut'
+      responses:
+        '200':
+          description: Chat updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSuccessPut'
+        '400':
+          description: Invalid input data
+        '404':
+          description: Chat not found
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/suggestions:
+    get:
+      tags:
+        - Entrypoint Management
+      summary: Endpoint to fetch default questions based on the entrypoint
+      description: Fetches default questions based on the entrypoint
+      operationId: getSuggestions
+      parameters:
+        - name: name
+          in: query
+          description: entrypoint of user
+          required: false
+          schema:
+            type: string
+            example: GFunds
+      responses:
+        '200':
+          description: List of Default questions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntrypointGet'
+        '400':
+          description: Invalid input data
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/issue:
+    post:
+      tags:
+        - Issue Management
+      summary: To report an issue for a session
+      description: Reports an issue for a session
+      operationId: createIssue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssuePost'
+      responses:
+        '201':
+          description: Issue created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueSuccessPost'
+        '400':
+          description: Invalid issue data
+        '500':
+          description: Internal Server Error
+  /ROOT_PREFIX/response:
+    post:
+      summary: Send chat messages
+      operationId: fetchResponse
+      tags:
+        - AWS API calling Azure Endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      content:
+                        type: string
+                        description: The content of the message
+                        example: What are the limitations of technical analysis?
+                      role:
+                        type: string
+                        description: The role of the message sender (e.g., user, assistant)
+                        example: user
+                    required:
+                      - content
+                      - role
+                context:
+                  type: object
+                  properties:
+                    suggest_followup_questions:
+                      type: boolean
+                      description: Whether to suggest follow-up questions
+                      example: true
+                    profile:
+                      type: object
+                      description: Profile details of user
+                      properties:
+                        feeling:
+                          type: string
+                          description: feeling of the user
+                          example: Feeling stressed, struggling to manage
+                        entry_point:
+                          type: string
+                          description: entrypoint of the user
+                          example: GSave
+                        role:
+                          type: string
+                          description: role of the user
+                          example: Contribute to decisions
+                        goal:
+                          type: string
+                          description: goal of the user
+                          example: Paying off debts
+                        situation:
+                          type: array
+                          description: situation of the user
+                          items:
+                            type: string
+                          example:
+                            - I am able to regularly save
+                action:
+                  type: string
+                  example: summarize
+              required:
+                - messages
+                - context
+                - action
+      responses:
+        '200':
+          description: Chat response successfully processed
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  id: chatcmpl-AGndg9JDk40VikG3fVdVJ4O1ANOTT
+                  choices:
+                    - delta:
+                        content: The
+                        function_call: null
+                        role: null
+                        tool_calls: null
+                      finish_reason: null
+                      index: 0
+                      content_filter_results:
+                        hate:
+                          filtered: false
+                          severity: safe
+                        protected_material_code:
+                          filtered: false
+                          detected: false
+                        protected_material_text:
+                          filtered: false
+                          detected: false
+                        self_harm:
+                          filtered: false
+                          severity: safe
+                        sexual:
+                          filtered: false
+                          severity: safe
+                        violence:
+                          filtered: false
+                          severity: safe
+                  created: 1728567424
+                  model: gpt-35-turbo
+                  object: chat.completion.chunk
+                  system_fingerprint: null
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    UserGet:
+      type: object
+      required:
+        - Name
+        - lastProfiled
+        - termsAccepted
+        - userProfile
+      properties:
+        Name:
+          type: string
+          example: Alice
+        lastProfiled:
+          type: integer
+          example: 1728286783.78864
+        termsAccepted:
+          type: boolean
+          example: false
+        userProfile:
+          type: object
+          properties:
+            feeling:
+              type: string
+              example: ' Feeling stressed, struggling to manage'
+            entry_point:
+              type: string
+              example: GSave
+            role:
+              type: string
+              example: Contribute to decisions
+            goal:
+              type: string
+              example: Paying off debts
+            situation:
+              type: array
+              items:
+                type: string
+              example:
+                - I am able to regularly save
+    UserPost:
+      type: object
+      required:
+        - userId
+        - Name
+      properties:
+        userId:
+          type: string
+          example: '127010000647397352740'
+        Name:
+          type: string
+          example: Alice
+    UserPut:
+      type: object
+      required:
+        - userId
+        - data
+      properties:
+        userId:
+          type: string
+          example: '127010000647397352740'
+        data:
+          type: object
+          properties:
+            GInvestTermsAccepted:
+              type: boolean
+              example: true
+            LearningTermsAccepted:
+              type: boolean
+              example: true
+            GSaveTermsAccepted:
+              type: boolean
+              example: true
+            GFundsTermsAccepted:
+              type: boolean
+              example: true
+            GStocksTermsAccepted:
+              type: boolean
+              example: true
+            GCryptoTermsAccepted:
+              type: boolean
+              example: true
+            GInsureTermsAccepted:
+              type: boolean
+              example: true
+            userProfile:
+              type: object
+              properties:
+                feeling:
+                  type: string
+                  example: ' Feeling stressed, struggling to manage'
+                entry_point:
+                  type: string
+                  example: GSave
+                role:
+                  type: string
+                  example: Contribute to decisions
+                goal:
+                  type: string
+                  example: Paying off debts
+                situation:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - I am able to regularly save
+    userSuccessPost:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: User created successfully
+    userSuccessPut:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'Document updated. Matched count: 1, Modified count: 1'
+    SessionPost:
+      type: object
+      required:
+        - userid
+        - entrypoint
+      properties:
+        userid:
+          type: string
+          example: '127010000647397352740'
+        entrypoint:
+          type: string
+          example: GSave
+    SessionSuccessPost:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 66e93bee3c32b364888f7ce1
+    SessionGet:
+      type: object
+      required:
+        - _id
+        - isArchived
+        - lastUpdate
+        - sessionName
+        - userId
+        - entrypoint
+      properties:
+        _id:
+          type: string
+          example: 66e9710afac171e5b55ef0cd
+        isArchived:
+          type: boolean
+          example: false
+        lastUpdate:
+          type: number
+          example: 1726574858.436359
+        sessionName:
+          type: string
+          example: Test 4
+        userId:
+          type: string
+          example: '127010000647397352740'
+        entrypoint:
+          type: string
+          example: GFunds
+    SessionPut:
+      type: object
+      required:
+        - sessionId
+        - data
+      properties:
+        sessionId:
+          type: string
+          example: 66e97107fac171e5b55ef0cc
+        data:
+          type: object
+          properties:
+            sessionName:
+              type: string
+              example: Test 3
+            lastUpdate:
+              type: number
+              example: 1727331189.0030868
+            isArchived:
+              type: boolean
+              example: false
+    SessionSuccessPut:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'Document updated. Matched count: 1, Modified count: 1'
+    SessionDelete:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'Documents deleted. Matched count: 10, Deleted count: 10'
+    ChatPost:
+      type: object
+      required:
+        - sessionId
+        - query
+        - answer
+      properties:
+        sessionId:
+          type: string
+          example: 66e93bee3c32b364888f7ce1
+        query:
+          type: string
+          example: question 1
+        answer:
+          type: object
+          properties:
+            answer:
+              type: string
+              example: some answer
+            followupQuestions:
+              type: array
+              items:
+                type: string
+              example:
+                - question 1
+                - question 2
+                - question 3
+            imageUrl:
+              type: string
+              example: image url
+            videoUrl:
+              type: string
+              example: video url
+            multipleChoices:
+              type: array
+              items:
+                type: string
+              example:
+                - choice 1
+                - choice 2
+                - choice 3
+    ChatSuccessPost:
+      type: object
+      required:
+        - new_chat
+      properties:
+        new_chat:
+          type: array
+          items:
+            type: object
+          example:
+            - _id: 66e93bee3c32b364888f7ce1
+              answer:
+                answer: some answer
+                followupQuestions:
+                  - question 1
+                  - question 2
+                  - question 3
+                imageUrl: image url
+                multipleChoices:
+                  - choice 1
+                  - choice 2
+                  - choice 3
+                videoUrl: video url
+              createdAt: 1731495222.286305
+              day: 13/11/2024
+              feedback: 0
+              query: question 1
+              sessionId: 672dc7d741d974d7504e7840
+              time: 13/11/2024
+    ChatPut:
+      type: object
+      required:
+        - chatid
+        - data
+      properties:
+        chatid:
+          type: string
+          example: 66e97107fac171e5b55ef0cc
+        data:
+          type: object
+          properties:
+            feedback:
+              type: integer
+              example: -1
+    ChatSuccessPut:
+      type: object
+      required:
+        - message
+        - updated_chat
+      properties:
+        message:
+          type: string
+          example: 'Document updated. Matched count: 1, Modified count: 1'
+        updated_chat:
+          type: array
+          items:
+            type: object
+          example:
+            - _id: 66e97107fac171e5b55ef0cc
+              answer:
+                answer: some answer
+                followupQuestions:
+                  - question 1
+                  - question 2
+                  - question 3
+                imageUrl: image url
+                multipleChoices:
+                  - choice 1
+                  - choice 2
+                  - choice 3
+                videoUrl: video url
+              createdAt: 1731495222.286305
+              day: 13/11/2024
+              feedback: -1
+              query: First question
+              sessionId: 672dc7d741d974d7504e7840
+              time: 13/11/2024
+    EntrypointGet:
+      type: object
+      required:
+        - suggestions
+      properties:
+        suggestions:
+          type: array
+          items:
+            type: string
+          example:
+            - what is Gfund?
+            - Advantages of GFund
+            - Different Funds under GFunds
+    IssuePost:
+      type: object
+      required:
+        - sessionId
+        - Feedback
+      properties:
+        sessionId:
+          type: string
+          example: 66e93bee3c32b364888f7ce1
+        Feedback:
+          type: string
+          example: Frequent issue
+    IssueSuccessPost:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Your issue has been registered in id 673b5d53a3856a333a141bc4
