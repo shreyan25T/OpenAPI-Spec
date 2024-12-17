@@ -75,12 +75,9 @@ def test_case_generator(yaml_file, locust_flag):
     filename = str(content.info.title).lower().replace(" ", "_")
     classname = snake_to_caps(filename)
 
-    methods = {"className": classname + "TestManager"}
+    test_cases = []
     for path in content.paths:
         for ops in path.operations:
-            if not ops.method.value + "Operations" in methods:
-                methods[ops.method.value + "Operations"] = []
-            item = methods[ops.method.value + "Operations"]
             method = ops.method.value.lower()
             query_params = []
             path_variables = []
@@ -126,10 +123,10 @@ def test_case_generator(yaml_file, locust_flag):
                 # if locust_flag is not None and res.code != 200:
                 #     continue
 
-                item.append(
+                test_cases.append(
                     {
-                        "url": path_with_dynamic_params,
-                        "functionName": camel_to_snake(ops.operation_id)
+                        "path_with_params": path_with_dynamic_params,
+                        "method_name": camel_to_snake(ops.operation_id)
                         + "_"
                         + str(res.code),
                         "query_param_variables": query_param_variables,
@@ -137,13 +134,21 @@ def test_case_generator(yaml_file, locust_flag):
                         "statusCode": res.code,
                         "responseObject": payload_p,
                         "responseObjectType": type_f,
+                        "statusCode": res.code,
                         "http_method": method,
                         "has_payload": method in ["post", "put"],
                         "payload": example_payload if example_payload else "{}",
                     }
                 )
-    print("methods---------", methods)
-    rendered = pystache.render(template_str, methods)
+    rendered = pystache.render(
+        template_str,
+        {
+            "class_name": (
+                "LocustTestManager" if locust_flag else classname + "TestManager"
+            ),
+            "test_cases": test_cases,
+        },
+    )
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".py") as temp_file:
         temp_file.write(html.unescape(rendered))

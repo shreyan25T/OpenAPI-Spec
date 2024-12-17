@@ -5,8 +5,8 @@ import pytest
 import requests
 import json
 
-class Test{{className}}:
-    """{{className}} unit test stubs"""
+class Test{{class_name}}:
+    """{{class_name}} unit test stubs"""
 
     base_url = "http://localhost:8080"  # Define the base URL for the API
 
@@ -20,9 +20,9 @@ class Test{{className}}:
         """Cleanup after tests if required"""
         pass
 
-    {{#getOperations}}
-    def test_{{functionName}}(self):
-        """Test for the {{functionName}} endpoint"""
+    {{#test_cases}}
+    def test_{{method_name}}(self):
+        """Test for the {{method_name}} endpoint"""
 
         {{#query_param_variables}}
         # Dynamic query parameters
@@ -33,114 +33,19 @@ class Test{{className}}:
         {{path_variable_assignments}}
         {{/path_variable_assignments}}
 
-        url = f"{self.base_url}{{url}}"  # Construct the full URL
+        url = f"{self.base_url}{{path_with_params}}"  # Construct the full URL
 
-        response = requests.get(url, timeout=self.timeout) 
-
-        assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
-        assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
-
-
-    {{/getOperations}}
-
-
-    {{#postOperations}}
-    def test_{{functionName}}(self):
-        """Test for the {{functionName}} endpoint"""
-
-        {{#query_param_variables}}
-        # Dynamic query parameters
-        {{query_param_variables}}
-        {{/query_param_variables}}
-        {{#path_variable_assignments}}
-        # Dynamic path variables
-        {{path_variable_assignments}}
-        {{/path_variable_assignments}}
-        url = f"{self.base_url}{{url}}"  # Construct the full URL
-
+        method = {{http_method}}
         {{#has_payload}}
-        
-        # Handle JSON payload
-        payload = {{payload}}
-        response = requests.post(url, json={{payload}}, timeout=self.timeout) 
 
+        response = requests.request(method=method.upper(),url={{url}}, json={{payload}}, timeout=self.timeout) 
         {{/has_payload}}
 
         {{^has_payload}}
-        response = requests.post(url, json={{payload}}, timeout=self.timeout) 
+        response = requests.request(method=method.upper(),url={{url}}, timeout=self.timeout) 
         {{/has_payload}}
 
         assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
         assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
 
-
-    {{/postOperations}}
-
-
-    {{#putOperations}}
-    def test_{{functionName}}(self):
-        """Test for the {{functionName}} endpoint"""
-
-        {{#query_param_variables}}
-        # Dynamic query parameters
-        {{query_param_variables}}
-        {{/query_param_variables}}
-        {{#path_variable_assignments}}
-        # Dynamic path variables
-        {{path_variable_assignments}}
-        {{/path_variable_assignments}}
-
-        url = f"{self.base_url}{{url}}"  # Construct the full URL
-
-
-        {{#has_payload}}
-        
-        # Handle JSON payload
-        payload = {{payload}}
-        response = requests.put(url, json={{payload}}, timeout=self.timeout) 
-
-        {{/has_payload}}
-        
-        {{^has_payload}}
-        response = requests.put(url, json={{payload}}, timeout=self.timeout) 
-        {{/has_payload}} 
-
-
-        assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
-        assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
-
-
-    {{/putOperations}}
-
-
-    {{#deleteOperations}}
-    def test_{{functionName}}(self):
-        """Test for the {{functionName}} endpoint"""
-        {{#query_param_variables}}
-        # Dynamic query parameters
-        {{query_param_variables}}
-        {{/query_param_variables}}
-        {{#path_variable_assignments}}
-        # Dynamic path variables
-        {{path_variable_assignments}}
-        {{/path_variable_assignments}}
-
-        url = f"{self.base_url}{{url}}"  # Construct the full URL
-
-        {{#has_payload}}
-        
-        # Handle JSON payload
-        payload = {{payload}}
-        response = requests.delete(url, json={{payload}}, timeout=self.timeout) 
-
-        {{/has_payload}}
-        
-        {{^has_payload}}
-        response = requests.delete(url, json={{payload}}, timeout=self.timeout) 
-        {{/has_payload}}
-
-        assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
-        assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
-
-
-    {{/deleteOperations}}
+    {{/test_cases}}
