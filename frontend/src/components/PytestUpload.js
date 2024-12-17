@@ -1,6 +1,6 @@
 import React, { use, useState } from "react";
 import axios from "axios";
-import { Button, TextField, Typography, IconButton, Box } from "@mui/material";
+import { Button, TextField, Typography, IconButton, Box, Grid } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -10,6 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "./navbar/Navbar";
 import HttpIcon from "@mui/icons-material/Http";
 import InputAdornment from "@mui/material/InputAdornment";
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const PytestUpload = () => {
   const { user } = useAuth0();
@@ -23,6 +24,7 @@ const PytestUpload = () => {
     { url: "", statusCode: "", response: "" },
   ]);
   const [previewData, setPreviewData] = useState("")
+  const [locustFlag, setLocustFlag] = useState(false)
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -57,9 +59,10 @@ const PytestUpload = () => {
   };
 
   const handleTest = async () => {
+    const url = locustFlag? "http://127.0.0.1:8000/home/test?locust_flag=locust" :"http://127.0.0.1:8000/home/test"
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/home/test",
+        url,
         {
           spec_content: specData,
           spec_file_path: specPath,
@@ -147,24 +150,47 @@ const PytestUpload = () => {
     <React.Fragment>
       <Navbar />
       <div
-        className="grid grid-cols-1 gap-2 justify-items-center mt-20"
+        className="w-full mt-20"
         style={{ padding: "10px" }}
       >
         <ToastContainer />
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
+        <div className=" grid grid-cols-5 gap-y-4">
+          <div className=" md:col-span-2 col-span-full">
+          <TextField
+          placeholder="OpenAPI Spec"
+          variant="outlined"
+          multiline
+          InputLabelProps={{
+            shrink: true, // Keep the label visible if both placeholder and label are used
+          }}
+          rows={15}
+          value={specData}
+          onChange={(e) => setSpecData(e.target.value)}
+          fullWidth
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "gray",
+              },
+              "&:hover fieldset": {
+                borderColor: "black",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "gray",
+                borderWidth: "1px"
+              },
+            },
+          }}
+        />
+          </div>
+          <div className=" col-span-full md:col-span-1 flex flex-col items-center gap-3">
           <input
             type="file"
             onChange={handleUpload}
             style={{ display: "none" }}
             id="upload-file-input"
           />
-          <h3>Hi {user.name}, you can generate pytest files here</h3>
-          <label htmlFor="upload-file-input">
+            <label htmlFor="upload-file-input">
             <Button
               variant="contained"
               color="secondary"
@@ -175,28 +201,13 @@ const PytestUpload = () => {
             </Button>
           </label>
           <Typography variant="body1">{fileName}</Typography>
-        </Box>
-        <TextField
-          label="OpenAPI Spec"
-          variant="outlined"
-          multiline
-          rows={4}
-          value={specData}
-          onChange={(e) => setSpecData(e.target.value)}
-          fullWidth
-        />
-
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
-          <Button variant="contained" color="secondary" onClick={handleTest}>
+          {specData && <Button variant="contained" color="secondary"               
+          style={{ display:'flex', gap: 3, paddingLeft:'30px'}}
+          onClick={handleTest}>
             Preview
-          </Button>
-          
-          {isFileUploaded && (
+            <ChevronRightIcon></ChevronRightIcon>
+          </Button>}
+          {previewData && (
             <Button
               variant="contained"
               color="secondary"
@@ -206,24 +217,36 @@ const PytestUpload = () => {
               Download Test File
             </Button>
           )}
-        </Box>
-        {previewData && <TextField
-          label="OpenAPI Spec"
-          variant="outlined"
-          multiline
-          rows={4}
-          value={previewData}
-          onChange={(e) => setPreviewData(e.target.value)}
-          fullWidth
-        />}
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
-          <Typography variant="body1">{testResult}</Typography>
-        </Box>
+          </div>
+          <div className=" md:col-span-2 col-span-full">
+          <TextField
+           placeholder="Pytest File"
+           variant="outlined"
+           multiline
+           InputLabelProps={{
+             shrink: true, // Keep the label visible if both placeholder and label are used
+           }}
+           rows={15}
+           value={previewData}
+           onChange={(e) => setPreviewData(e.target.value)}
+           fullWidth
+           sx={{
+             "& .MuiOutlinedInput-root": {
+               "& fieldset": {
+                 borderColor: "gray",
+               },
+               "&:hover fieldset": {
+                 borderColor: "black",
+               },
+               "&.Mui-focused fieldset": {
+                 borderColor: "gray",
+                 borderWidth: "1px"
+               },
+             },
+           }}
+        />
+          </div>
+        </div>
       </div>
     </React.Fragment>
   );

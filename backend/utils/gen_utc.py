@@ -75,14 +75,13 @@ def test_case_generator(yaml_file, locust_flag):
     filename = str(content.info.title).lower().replace(" ", "_")
     classname = snake_to_caps(filename)
 
-    # for tag in content.tags:
     methods = {"className": classname + "TestManager"}
     for path in content.paths:
-        # if str(path.url).startswith("/" + tag.name):
         for ops in path.operations:
             if not ops.method.value + "Operations" in methods:
                 methods[ops.method.value + "Operations"] = []
             item = methods[ops.method.value + "Operations"]
+            method = ops.method.value.lower()
             query_params = []
             path_variables = []
             for param in ops.parameters:
@@ -124,8 +123,8 @@ def test_case_generator(yaml_file, locust_flag):
                 else:
                     type_f, payload_p = "dict", {}
 
-                if locust_flag is not None and res.code != 200:
-                    continue
+                # if locust_flag is not None and res.code != 200:
+                #     continue
 
                 item.append(
                     {
@@ -138,6 +137,8 @@ def test_case_generator(yaml_file, locust_flag):
                         "statusCode": res.code,
                         "responseObject": payload_p,
                         "responseObjectType": type_f,
+                        "http_method": method,
+                        "has_payload": method in ["post", "put"],
                         "payload": example_payload if example_payload else "{}",
                     }
                 )
