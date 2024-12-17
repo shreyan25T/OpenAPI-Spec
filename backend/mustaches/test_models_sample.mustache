@@ -1,35 +1,145 @@
 # coding: utf-8
 
 {{>partial_header}}
-from __future__ import absolute_import
-
-import json
 import pytest
-from django.test import Client
-from django.test import TestCase
-from django.urls import reverse
+import requests
+import json
+from .constants import API_URL
 
-# from {{packageName}}.views import *
-# from {{packageName}}.models import *
-
-
-@pytest.mark.django_db
-class Test{{className}}(TestCase):
+class Test{{className}}:
     """{{className}} unit test stubs"""
 
+    base_url = API_URL  # Define the base URL for the API
+
     def setUp(self):
-        self.client = Client() {{! Iterating the models  }}{{#models}}
-        # self.{{modelVariable}} = {{modelName}}.objects.create(**{{#modelExample}}{{{.}}}{{/modelExample}})
-        {{/models}}
+        """Setup for tests if required"""
+        pass
 
     def tearDown(self):
+        """Cleanup after tests if required"""
         pass
 
     {{#getOperations}}
     def test_{{functionName}}(self):
-        url = reverse('{{url}}')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, {{statusCode}})
-        self.assertIsInstance(response.json(), {{responseObjectType}})
+        """Test for the {{functionName}} endpoint"""
+
+        {{#query_param_variables}}
+        # Dynamic query parameters
+        {{query_param_variables}}
+        {{/query_param_variables}}
+        {{#path_variable_assignments}}
+        # Dynamic path variables
+        {{path_variable_assignments}}
+        {{/path_variable_assignments}}
+
+        url = f"{self.base_url}{{url}}"  # Construct the full URL
+
+        response = requests.get(url) 
+
+        assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
+        assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
+
 
     {{/getOperations}}
+
+
+    {{#postOperations}}
+    def test_{{functionName}}(self):
+        """Test for the {{functionName}} endpoint"""
+
+        {{#query_param_variables}}
+        # Dynamic query parameters
+        {{query_param_variables}}
+        {{/query_param_variables}}
+        {{#path_variable_assignments}}
+        # Dynamic path variables
+        {{path_variable_assignments}}
+        {{/path_variable_assignments}}
+        url = f"{self.base_url}{{url}}"  # Construct the full URL
+
+        {{#has_payload}}
+        
+        # Handle JSON payload
+        payload = {{payload}}
+        response = requests.post(url, json={{payload}}) 
+
+        {{/has_payload}}
+
+        {{^has_payload}}
+        response = requests.post(url, json={{payload}}) 
+        {{/has_payload}}
+
+        assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
+        assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
+
+
+    {{/postOperations}}
+
+
+    {{#putOperations}}
+    def test_{{functionName}}(self):
+        """Test for the {{functionName}} endpoint"""
+
+        {{#query_param_variables}}
+        # Dynamic query parameters
+        {{query_param_variables}}
+        {{/query_param_variables}}
+        {{#path_variable_assignments}}
+        # Dynamic path variables
+        {{path_variable_assignments}}
+        {{/path_variable_assignments}}
+
+        url = f"{self.base_url}{{url}}"  # Construct the full URL
+
+
+        {{#has_payload}}
+        
+        # Handle JSON payload
+        payload = {{payload}}
+        response = requests.put(url, json={{payload}}) 
+
+        {{/has_payload}}
+        
+        {{^has_payload}}
+        response = requests.put(url, json={{payload}}) 
+        {{/has_payload}} 
+
+
+        assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
+        assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
+
+
+    {{/putOperations}}
+
+
+    {{#deleteOperations}}
+    def test_{{functionName}}(self):
+        """Test for the {{functionName}} endpoint"""
+        {{#query_param_variables}}
+        # Dynamic query parameters
+        {{query_param_variables}}
+        {{/query_param_variables}}
+        {{#path_variable_assignments}}
+        # Dynamic path variables
+        {{path_variable_assignments}}
+        {{/path_variable_assignments}}
+
+        url = f"{self.base_url}{{url}}"  # Construct the full URL
+
+        {{#has_payload}}
+        
+        # Handle JSON payload
+        payload = {{payload}}
+        response = requests.delete(url, json={{payload}}) 
+
+        {{/has_payload}}
+        
+        {{^has_payload}}
+        response = requests.delete(url, json={{payload}}) 
+        {{/has_payload}}
+
+        assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
+        assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
+
+
+    {{/deleteOperations}}
