@@ -4,12 +4,13 @@
 import pytest
 import requests
 import json
-from .constants import API_URL
 
 class Test{{className}}:
     """{{className}} unit test stubs"""
 
-    base_url = API_URL  # Define the base URL for the API
+    base_url = "http://localhost:8080"  # Define the base URL for the API
+
+    timeout = 60
 
     def setUp(self):
         """Setup for tests if required"""
@@ -34,7 +35,7 @@ class Test{{className}}:
 
         url = f"{self.base_url}{{url}}"  # Construct the full URL
 
-        response = requests.get(url) 
+        response = requests.get(url, timeout=self.timeout) 
 
         assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
         assert isinstance(response.json(), {{responseObjectType}}), f"Unexpected response type: {type(response.json())}"
@@ -61,12 +62,12 @@ class Test{{className}}:
         
         # Handle JSON payload
         payload = {{payload}}
-        response = requests.post(url, json={{payload}}) 
+        response = requests.post(url, json={{payload}}, timeout=self.timeout) 
 
         {{/has_payload}}
 
         {{^has_payload}}
-        response = requests.post(url, json={{payload}}) 
+        response = requests.post(url, json={{payload}}, timeout=self.timeout) 
         {{/has_payload}}
 
         assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"
@@ -96,12 +97,12 @@ class Test{{className}}:
         
         # Handle JSON payload
         payload = {{payload}}
-        response = requests.put(url, json={{payload}}) 
+        response = requests.put(url, json={{payload}}, timeout=self.timeout) 
 
         {{/has_payload}}
         
         {{^has_payload}}
-        response = requests.put(url, json={{payload}}) 
+        response = requests.put(url, json={{payload}}, timeout=self.timeout) 
         {{/has_payload}} 
 
 
@@ -130,12 +131,12 @@ class Test{{className}}:
         
         # Handle JSON payload
         payload = {{payload}}
-        response = requests.delete(url, json={{payload}}) 
+        response = requests.delete(url, json={{payload}}, timeout=self.timeout) 
 
         {{/has_payload}}
         
         {{^has_payload}}
-        response = requests.delete(url, json={{payload}}) 
+        response = requests.delete(url, json={{payload}}, timeout=self.timeout) 
         {{/has_payload}}
 
         assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"

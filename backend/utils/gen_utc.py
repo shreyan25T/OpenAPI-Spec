@@ -1,5 +1,6 @@
 import html
 import os
+import tempfile
 import zipfile
 
 import constants
@@ -11,11 +12,13 @@ from constants import (
     test_dir,
     test_mustache_sample,
 )
+from fastapi.responses import FileResponse
 from openapi_parser import parse
 from utils.parser_utils import (
     camel_to_snake,
     extract_example_from_schema,
     get_schema_payload,
+    snake_to_caps,
 )
 
 
@@ -57,7 +60,7 @@ def create_zip_file_sel(zip_folder_path):
     return zip_file_path
 
 
-def test_case_generator(yaml_file, output_path, locust_flag):
+def test_case_generator(yaml_file, locust_flag):
 
     content = parse(yaml_file)
     print("CONTENT", yaml_file)
@@ -69,105 +72,89 @@ def test_case_generator(yaml_file, output_path, locust_flag):
         with open(locust_mustache_sample, "r") as f:
             template_str = f.read()
 
-    for tag in content.tags:
-        methods = {
-            "packageName": str(tag.name).lower().replace(" ", "_").capitalize(),
-            "className": str(tag.name).lower().replace(" ", "_").capitalize()
-            + "TestManager",
-            "models": {
-                "modelName": str(tag.name).lower().replace(" ", "_").capitalize(),
-                "modelVariable": tag.name,
-                "modelExample": {"id": 1, "name": "jack"},
-            },
-        }
-        for path in content.paths:
-            if str(path.url).startswith("/" + tag.name):
-                for ops in path.operations:
-                    if not ops.method.value + "Operations" in methods:
-                        methods[ops.method.value + "Operations"] = []
-                    item = methods[ops.method.value + "Operations"]
-                    query_params = []
-                    path_variables = []
-                    for param in ops.parameters:
-                        if param.location.value == "query":
-                            default_value = param.schema.default
-                            example_value = param.schema.example
-                            value = (
-                                default_value
-                                or example_value
-                                or f"default_{param.name}"
-                            )
-                            query_params.append({"name": param.name, "value": value})
-                        if param.location.value == "path":
-                            default_value = param.schema.default
-                            example_value = param.schema.example
-                            value = (
-                                default_value
-                                or example_value
-                                or f"default_{param.name}"
-                            )
-                            path_variables.append({"name": param.name, "value": value})
+    filename = str(content.info.title).lower().replace(" ", "_")
+    classname = snake_to_caps(filename)
 
-                    query_param_variables = "\n        ".join(
-                        [
-                            f"{param['name']} = '{param['value']}'"
-                            for param in query_params
-                        ]
-                    )
+    # for tag in content.tags:
+    methods = {"className": classname + "TestManager"}
+    for path in content.paths:
+        # if str(path.url).startswith("/" + tag.name):
+        for ops in path.operations:
+            if not ops.method.value + "Operations" in methods:
+                methods[ops.method.value + "Operations"] = []
+            item = methods[ops.method.value + "Operations"]
+            query_params = []
+            path_variables = []
+            for param in ops.parameters:
+                if param.location.value == "query":
+                    default_value = param.schema.default
+                    example_value = param.schema.example
+                    value = default_value or example_value or f"default_{param.name}"
+                    query_params.append({"name": param.name, "value": value})
+                if param.location.value == "path":
+                    default_value = param.schema.default
+                    example_value = param.schema.example
+                    value = default_value or example_value or f"default_{param.name}"
+                    path_variables.append({"name": param.name, "value": value})
 
-                    query_string = "&".join(
-                        [
-                            f"{param['name']}={{{param['name']}}}"
-                            for param in query_params
-                        ]
-                    )
+            query_param_variables = "\n        ".join(
+                [f"{param['name']} = '{param['value']}'" for param in query_params]
+            )
 
-                    path_with_dynamic_params = (
-                        f"{path.url}?" + query_string if query_params else path.url
-                    )
-                    path_variable_assignments = "\n        ".join(
-                        [
-                            f"{param['name']} = '{param['value']}'"
-                            for param in path_variables
-                        ]
-                    )
-                    example_payload = None
-                    requestbody = ops.request_body
-                    if requestbody:
-                        request_body = requestbody.content
-                        if "application/json" in request_body[0].type.value:
-                            schema = request_body[0].schema
-                            example_payload = extract_example_from_schema(
-                                schema, content
-                            )
-                    for res in ops.responses:
-                        if res.content and len(res.content) > 0:
-                            type_f, payload_p = get_schema_payload(res.content[0])
-                        else:
-                            type_f, payload_p = "dict", {}
+            query_string = "&".join(
+                [f"{param['name']}={{{param['name']}}}" for param in query_params]
+            )
 
-                        if locust_flag is not None and res.code != 200:
-                            continue
+            path_with_dynamic_params = (
+                f"{path.url}?" + query_string if query_params else path.url
+            )
+            path_variable_assignments = "\n        ".join(
+                [f"{param['name']} = '{param['value']}'" for param in path_variables]
+            )
+            example_payload = None
+            requestbody = ops.request_body
+            if requestbody:
+                request_body = requestbody.content
+                if "application/json" in request_body[0].type.value:
+                    schema = request_body[0].schema
+                    example_payload = extract_example_from_schema(schema, content)
+            for res in ops.responses:
+                if res.content and len(res.content) > 0:
+                    type_f, payload_p = get_schema_payload(res.content[0])
+                else:
+                    type_f, payload_p = "dict", {}
 
-                        item.append(
-                            {
-                                "url": path_with_dynamic_params,
-                                "functionName": camel_to_snake(ops.operation_id)
-                                + "_"
-                                + str(res.code),
-                                "query_param_variables": query_param_variables,
-                                "path_variable_assignments": path_variable_assignments,
-                                "statusCode": res.code,
-                                "responseObject": payload_p,
-                                "responseObjectType": type_f,
-                                "payload": example_payload if example_payload else "{}",
-                            }
-                        )
-        print("methods---------", methods)
-        rendered = pystache.render(template_str, methods)
+                if locust_flag is not None and res.code != 200:
+                    continue
 
-        with open(os.path.join(output_path, f"test_{tag.name}_manager.py"), "w") as f:
-            f.write(html.unescape(rendered))
+                item.append(
+                    {
+                        "url": path_with_dynamic_params,
+                        "functionName": camel_to_snake(ops.operation_id)
+                        + "_"
+                        + str(res.code),
+                        "query_param_variables": query_param_variables,
+                        "path_variable_assignments": path_variable_assignments,
+                        "statusCode": res.code,
+                        "responseObject": payload_p,
+                        "responseObjectType": type_f,
+                        "payload": example_payload if example_payload else "{}",
+                    }
+                )
+    print("methods---------", methods)
+    rendered = pystache.render(template_str, methods)
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".py") as temp_file:
+        temp_file.write(html.unescape(rendered))
+
+    return FileResponse(
+        temp_file.name,
+        media_type="text/x-python",  # MIME type for Python files
+        filename=f"test_{filename}_manager.py",  # Filename to show in the download
+    )
+
+    # with open(os.path.join(output_path, f"test_{filename}_manager.py"), "w") as f:
+    #     f.write(html.unescape(rendered))
 
 
 if __name__ == "__main__":

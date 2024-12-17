@@ -1,4 +1,5 @@
 import os
+import tempfile
 import uuid
 from typing import List, Optional
 
@@ -29,8 +30,8 @@ app.add_middleware(
 
 class SpecData(BaseModel):
     spec_content: str
-    spec_file_path: str
-    spec_uuid: str
+    spec_file_path: Optional[str] = None
+    spec_uuid: Optional[str] = None
     test_cases: Optional[list] = None
 
 
@@ -48,23 +49,13 @@ def validation_exception_handler(request, err):
 
 @app.post("/home/upload")
 async def upload_and_gen_utc(file: UploadFile = File(...)):
-    uuid_str = str(uuid.uuid4())
-    yaml_file_dir = os.path.join(download_dir, uuid_str)
-    os.makedirs(yaml_file_dir, exist_ok=True)
-    yaml_file_path = os.path.join(
-        yaml_file_dir, str(file.filename).strip().replace(" ", "_")
-    )
     if file.filename.endswith(".yaml") or file.filename.endswith(".yml"):
         try:
             contents = await file.read()
             _ = yaml.safe_load(contents)
         except yaml.YAMLError as e:
             return {"status": "error", "message": "Invalid YAML file."}
-        with open(yaml_file_path, "wb") as f:
-            f.write(contents)
-        spec_data = SpecData(
-            spec_content=contents, spec_file_path=yaml_file_path, spec_uuid=uuid_str
-        )
+        spec_data = SpecData(spec_content=contents)
         return {"status": "success", "data": spec_data}
     else:
         return {"status": "error", "message": "kindly, upload yaml file"}
@@ -73,37 +64,36 @@ async def upload_and_gen_utc(file: UploadFile = File(...)):
 @app.post("/home/test")
 async def test(spec_data: SpecData, locust_flag: str | None = None):
     try:
-        _ = yaml.safe_load(spec_data.spec_content)
+        openapi_content = yaml.safe_load(spec_data.spec_content)
+
     except yaml.YAMLError as e:
         print(e)
         return {"status": "error", "message": e}
 
-    # Create a folder with the same UUID in the /tests folder
-    test_folder_path = os.path.join(test_dir, spec_data.spec_uuid)
-    os.makedirs(test_folder_path, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        mode="w", delete=False, suffix=".yaml"
+    ) as temp_file:
+        yaml.dump(openapi_content, temp_file)
+        temp_file_path = temp_file.name
 
-    # Write the spec_content to a file in the test folder
-    spec_data.spec_file_path = os.path.join(test_folder_path, "spec.yaml")
+    # # Create a folder with the same UUID in the /tests folder
+    # test_folder_path = os.path.join(test_dir, spec_data.spec_uuid)
+    # # os.makedirs(test_folder_path, exist_ok=True)
+
+    # # Write the spec_content to a file in the test folder
+    # spec_data.spec_file_path = os.path.join(test_folder_path, "spec.yaml")
 
     variable_name = "API_URL"
     variable_value = "https://api.example.com"
 
-    constant_file_path = os.path.join(test_folder_path, "constants.py")
-    init_file_path = os.path.join(test_folder_path, "__init__.py")
+    # with open(spec_data.spec_file_path, "w") as f:
+    #     print("spec_uuid", spec_data.spec_uuid)
+    #     print("spec_path", spec_data.spec_file_path)
+    #     print("testcases", spec_data.test_cases)
 
-    with open(spec_data.spec_file_path, "w") as f:
-        print("spec_uuid", spec_data.spec_uuid)
-        print("spec_path", spec_data.spec_file_path)
-        print("testcases", spec_data.test_cases)
+    #     f.write(spec_data.spec_content)
 
-        f.write(spec_data.spec_content)
-    with open(constant_file_path, "w") as f:
-        f.write("# Update the base API URL below:\n")
-        f.write(f'{variable_name} = "{variable_value}"\n')
-    with open(init_file_path, "w") as f:
-        pass
-    test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag)
-    return {"status": "success"}
+    return test_case_generator(temp_file_path, locust_flag)
 
 
 # Manual Test cases generation

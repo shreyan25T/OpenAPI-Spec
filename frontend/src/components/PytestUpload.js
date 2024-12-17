@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import axios from "axios";
 import { Button, TextField, Typography, IconButton, Box } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -22,6 +22,7 @@ const PytestUpload = () => {
   const [testCases, setTestCases] = useState([
     { url: "", statusCode: "", response: "" },
   ]);
+  const [previewData, setPreviewData] = useState("")
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -66,18 +67,24 @@ const PytestUpload = () => {
           test_cases: testCases,
         },
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          responseType: "blob", // Treat the response as binary data (file)
         }
       );
 
-      if (response.data.status === "success") {
-        setTestResult("Test cases got generated successfully.");
-        setIsFileUploaded(true);
-      } else {
-        setTestResult("Error generating test cases.");
-      }
+      console.log('resp------',response.data)
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        console.log("File content as text:", reader.result);
+        setPreviewData(reader.result)
+      };
+      reader.readAsText(response.data);
+      setIsFileUploaded(true);
+      // if (response.data.status === "success") {
+      //   setTestResult("Test cases got generated successfully.");
+      // } else {
+      //   setTestResult("Error generating test cases.");
+      // }
     } catch (error) {
       console.error("Error testing spec:", error);
       setTestResult("Error testing spec.");
@@ -105,6 +112,29 @@ const PytestUpload = () => {
     } catch (error) {
       console.error("Error downloading zip file:", error);
     }
+  };
+  const downloadPythonFile = () => {
+    const fileContent = previewData; // Get the content of the TextField
+    const fileName = "test.py"; // Desired file name
+
+    // Create a Blob with the Python code and specify the MIME type
+    const blob = new Blob([fileContent], { type: "text/x-python" });
+
+    // Generate a URL for the Blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a link element
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleTestCaseChange = (index, field, value) => {
@@ -163,19 +193,29 @@ const PytestUpload = () => {
           flexDirection={"column"}
         >
           <Button variant="contained" color="secondary" onClick={handleTest}>
-            Test Spec
+            Preview
           </Button>
+          
           {isFileUploaded && (
             <Button
               variant="contained"
               color="secondary"
-              onClick={handleDownloadZip}
+              onClick={downloadPythonFile}
               style={{ marginLeft: "10px" }}
             >
-              Download Test Files
+              Download Test File
             </Button>
           )}
         </Box>
+        {previewData && <TextField
+          label="OpenAPI Spec"
+          variant="outlined"
+          multiline
+          rows={4}
+          value={previewData}
+          onChange={(e) => setPreviewData(e.target.value)}
+          fullWidth
+        />}
         <Box
           display={"flex"}
           alignItems={"center"}
