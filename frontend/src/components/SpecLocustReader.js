@@ -7,6 +7,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "./navbar/Navbar";
 import { Box } from "@mui/material";
+import DownloadIcon from "@mui/icons-material/Download";
+import CloseIcon from "@mui/icons-material/Close";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const SpecLocustReader = () => {
   const { user, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
@@ -16,6 +22,8 @@ const SpecLocustReader = () => {
   const [uuId, setuuId] = useState("");
   const [fileName, setFileName] = useState("No file chosen");
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const [fileContent, setFileContent] = useState("");
+  const [showFile, setShowFile] = useState(false);
 
   // if (isAuthenticated) throw new Error("ERROR CAUGHT");
 
@@ -23,6 +31,8 @@ const SpecLocustReader = () => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append("file", file);
+    setIsFileUploaded(false);
+    setFileContent("");
 
     // Set the file name for display
     setFileName(file.name);
@@ -55,6 +65,14 @@ const SpecLocustReader = () => {
     }
   };
 
+  const viewFile = () => {
+    setShowFile(true);
+  };
+
+  const handleClose = () => {
+    setShowFile(false);
+  };
+
   const handleTest = async () => {
     try {
       const response = await axios.post(
@@ -67,8 +85,9 @@ const SpecLocustReader = () => {
         }
       );
 
-      if (response.data.status === "success") {
+      if (response.data.file_content) {
         setTestResult("Test cases got generated successfully.");
+        setFileContent(response.data.file_content);
         setIsFileUploaded(true);
       } else {
         setTestResult("Error generating test cases.");
@@ -77,6 +96,22 @@ const SpecLocustReader = () => {
       console.error("Error testing spec:", error);
       setTestResult("Error testing spec.");
     }
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([fileContent], { type: "text/x-python" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "locustfile.py";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url); // Clean up URL
+  };
+
+  const copyAnswer = () => {
+    navigator.clipboard.writeText(fileContent);
   };
 
   const handleDownloadZip = async () => {
@@ -106,7 +141,10 @@ const SpecLocustReader = () => {
     <React.Fragment>
       <Navbar />
 
-      <div className="grid grid-cols-1 gap-2 justify-items-center mt-20" style={{ padding: "10px" }}>
+      <div
+        className="grid grid-cols-1 gap-2 justify-items-center mt-20"
+        style={{ padding: "10px" }}
+      >
         <ToastContainer />
         <Box
           display={"flex"}
@@ -155,10 +193,10 @@ const SpecLocustReader = () => {
             <Button
               variant="contained"
               color="secondary"
-              onClick={handleDownloadZip}
+              onClick={viewFile}
               style={{ marginLeft: "10px" }}
             >
-              Download Test Files
+              View the generated script
             </Button>
           )}
         </Box>
@@ -171,6 +209,64 @@ const SpecLocustReader = () => {
           <Typography variant="body1">{testResult}</Typography>
         </Box>
       </div>
+      <Dialog
+        open={showFile}
+        onClose={handleClose}
+        scroll="paper"
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <DialogTitle id="scroll-dialog-title" sx={{ flexGrow: 1 }}>
+            Locust Script
+          </DialogTitle>
+          <Box sx={{ display: "flex", gap: "5px" }}>
+            <Button
+              onClick={copyAnswer}
+              color="secondary"
+              style={{ color: "#f7901d" }}
+            >
+              <ContentCopyIcon />
+            </Button>
+            <Button
+              onClick={handleDownload}
+              color="secondary"
+              style={{ color: "#f7901d" }}
+            >
+              <DownloadIcon />
+            </Button>
+            <Button
+              onClick={handleClose}
+              color="secondary"
+              style={{ color: "#f7901d" }}
+            >
+              <CloseIcon />
+            </Button>
+          </Box>
+        </Box>
+
+        <DialogContent dividers>
+          <Box
+            sx={{
+              backgroundColor: "#f5f5f5",
+              padding: 2,
+              borderRadius: 1,
+              fontFamily: "Courier New, monospace",
+              whiteSpace: "pre-wrap",
+              wordWrap: "break-word",
+              overflowX: "auto",
+            }}
+          >
+            {fileContent}
+          </Box>
+        </DialogContent>
+      </Dialog>
     </React.Fragment>
   );
 };
