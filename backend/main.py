@@ -88,8 +88,8 @@ async def test(spec_data: SpecData, locust_flag: str | None = None):
         print("testcases",spec_data.test_cases)
 
         f.write(spec_data.spec_content)
-    test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag)
-    return {"status": "success"}
+    resp = test_case_generator(spec_data.spec_file_path, test_folder_path, locust_flag)
+    return {"file_content": resp, "status": "success"}
 
 # Manual Test cases generation
 @app.post("/home/manual-test")
