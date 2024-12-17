@@ -64,7 +64,7 @@ function App() {
                 />
                 <Route
                   path="/locust"
-                  element={<ProtectedRoute component={SpecLocustReader} />}
+                  element={<ProtectedRoute component={PytestUpload} />}
                 />
                 <Route
                   path="/selenium"

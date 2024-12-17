@@ -11,6 +11,7 @@ import Navbar from "./navbar/Navbar";
 import HttpIcon from "@mui/icons-material/Http";
 import InputAdornment from "@mui/material/InputAdornment";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useLocation } from "react-router-dom";
 
 const PytestUpload = () => {
   const { user } = useAuth0();
@@ -25,6 +26,7 @@ const PytestUpload = () => {
   ]);
   const [previewData, setPreviewData] = useState("")
   const [locustFlag, setLocustFlag] = useState(false)
+  const {pathname} = useLocation()
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -59,7 +61,8 @@ const PytestUpload = () => {
   };
 
   const handleTest = async () => {
-    const url = locustFlag? "http://127.0.0.1:8000/home/test?locust_flag=locust" :"http://127.0.0.1:8000/home/test"
+    console.log(pathname)
+    const url = pathname === "/locust"? "http://127.0.0.1:8000/home/test?locust_flag=locust" :"http://127.0.0.1:8000/home/test"
     try {
       const response = await axios.post(
         url,
@@ -83,11 +86,6 @@ const PytestUpload = () => {
       };
       reader.readAsText(response.data);
       setIsFileUploaded(true);
-      // if (response.data.status === "success") {
-      //   setTestResult("Test cases got generated successfully.");
-      // } else {
-      //   setTestResult("Error generating test cases.");
-      // }
     } catch (error) {
       console.error("Error testing spec:", error);
       setTestResult("Error testing spec.");
@@ -150,8 +148,7 @@ const PytestUpload = () => {
     <React.Fragment>
       <Navbar />
       <div
-        className="w-full mt-20"
-        style={{ padding: "10px" }}
+        className="w-full p-3"
       >
         <ToastContainer />
         <div className=" grid grid-cols-5 gap-y-4">
@@ -163,7 +160,7 @@ const PytestUpload = () => {
           InputLabelProps={{
             shrink: true, // Keep the label visible if both placeholder and label are used
           }}
-          rows={15}
+          rows={22}
           value={specData}
           onChange={(e) => setSpecData(e.target.value)}
           fullWidth
@@ -183,7 +180,7 @@ const PytestUpload = () => {
           }}
         />
           </div>
-          <div className=" col-span-full md:col-span-1 flex flex-col items-center gap-3">
+          <div className=" col-span-full md:col-span-1 flex flex-col items-center justify-center gap-3">
           <input
             type="file"
             onChange={handleUpload}
@@ -195,6 +192,7 @@ const PytestUpload = () => {
               variant="contained"
               color="secondary"
               component="span"
+              style={{width: '200px'}}
               startIcon={<CloudUploadIcon />}
             >
               Upload File
@@ -202,19 +200,19 @@ const PytestUpload = () => {
           </label>
           <Typography variant="body1">{fileName}</Typography>
           {specData && <Button variant="contained" color="secondary"               
-          style={{ display:'flex', gap: 3, paddingLeft:'30px'}}
+          style={{ width: '200px'}}
+          endIcon={ <ChevronRightIcon></ChevronRightIcon>}
           onClick={handleTest}>
             Preview
-            <ChevronRightIcon></ChevronRightIcon>
           </Button>}
           {previewData && (
             <Button
               variant="contained"
               color="secondary"
               onClick={downloadPythonFile}
-              style={{ marginLeft: "10px" }}
-            >
-              Download Test File
+              style={{ width: '200px'}}
+              >
+              Download
             </Button>
           )}
           </div>
@@ -226,7 +224,7 @@ const PytestUpload = () => {
            InputLabelProps={{
              shrink: true, // Keep the label visible if both placeholder and label are used
            }}
-           rows={15}
+           rows={22}
            value={previewData}
            onChange={(e) => setPreviewData(e.target.value)}
            fullWidth
