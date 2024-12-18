@@ -35,14 +35,14 @@ class Test{{class_name}}:
 
         url = f"{self.base_url}{{path_with_params}}"  # Construct the full URL
 
-        method = {{http_method}}
+        method = "{{http_method}}"
         {{#has_payload}}
 
-        response = requests.request(method=method.upper(),url={{url}}, json={{payload}}, timeout=self.timeout) 
+        response = requests.request(method=method.upper(),url=url, json={{payload}}, timeout=self.timeout) 
         {{/has_payload}}
 
         {{^has_payload}}
-        response = requests.request(method=method.upper(),url={{url}}, timeout=self.timeout) 
+        response = requests.request(method=method.upper(),url=url, timeout=self.timeout) 
         {{/has_payload}}
 
         assert response.status_code == {{statusCode}}, f"Unexpected status code: {response.status_code}"

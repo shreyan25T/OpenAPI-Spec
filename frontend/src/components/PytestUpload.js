@@ -25,7 +25,6 @@ const PytestUpload = () => {
     { url: "", statusCode: "", response: "" },
   ]);
   const [previewData, setPreviewData] = useState("")
-  const [locustFlag, setLocustFlag] = useState(false)
   const {pathname} = useLocation()
 
   const handleUpload = async (e) => {
@@ -61,7 +60,6 @@ const PytestUpload = () => {
   };
 
   const handleTest = async () => {
-    console.log(pathname)
     const url = pathname === "/locust"? "http://127.0.0.1:8000/home/test?locust_flag=locust" :"http://127.0.0.1:8000/home/test"
     try {
       const response = await axios.post(
@@ -116,7 +114,7 @@ const PytestUpload = () => {
   };
   const downloadPythonFile = () => {
     const fileContent = previewData; // Get the content of the TextField
-    const fileName = "test.py"; // Desired file name
+    const fileName = pathname === "/locust"? "locust_script.py": "pytest_script.py"; // Desired file name
 
     // Create a Blob with the Python code and specify the MIME type
     const blob = new Blob([fileContent], { type: "text/x-python" });
@@ -218,7 +216,7 @@ const PytestUpload = () => {
           </div>
           <div className=" md:col-span-2 col-span-full">
           <TextField
-           placeholder="Pytest File"
+           placeholder={ pathname==="/locust"? "Locust File":"Pytest File"}
            variant="outlined"
            multiline
            InputLabelProps={{
