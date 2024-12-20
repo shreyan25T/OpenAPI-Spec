@@ -10,6 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "./navbar/Navbar";
 import HttpIcon from "@mui/icons-material/Http";
 import InputAdornment from "@mui/material/InputAdornment";
+import client from "../client";
 
 const PytestManual = () => {
   const { user } = useAuth0();
@@ -20,8 +21,8 @@ const PytestManual = () => {
 
   const handleTest = async () => {
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/home/manual-test",
+      const response = await client.post(
+        "home/manual-test",
         {
           test_cases: testCases,
         },
@@ -45,8 +46,8 @@ const PytestManual = () => {
 
   const handleDownloadZip = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/home/download-zip?unique_session_id=${encodeURIComponent(
+      const response = await client.get(
+        `home/download-zip?unique_session_id=${encodeURIComponent(
           "uuId"
         )}`,
         {

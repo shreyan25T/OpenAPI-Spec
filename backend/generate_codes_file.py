@@ -15,7 +15,6 @@ def main():
     driver.get("https://rahulshettyacademy.com/angularpractice/")
     driver.find_element(By.NAME, "email").send_keys("exampleInput")
     driver.find_element(By.ID, "exampleInputPassword1").send_keys("password")
-    driver.find_element(By.ID, "exampleCheck1").click()
     time.sleep(2)
     driver.close()
 

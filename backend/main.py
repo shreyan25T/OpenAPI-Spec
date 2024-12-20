@@ -28,14 +28,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount the static build directory
-app.mount("/static", StaticFiles(directory="static/static"), name="static")
+# # Mount the static build directory
+# app.mount("/static", StaticFiles(directory="static/static"), name="static")
 
 
-# Serve index.html for the root path
-@app.get("/")
-async def serve_root():
-    return FileResponse("static/index.html")
+# # Serve index.html for the root path
+# @app.get("/")
+# async def serve_root():
+#     return FileResponse("static/index.html")
 
 
 class SpecData(BaseModel):
@@ -78,7 +78,9 @@ async def test(spec_data: SpecData, locust_flag: str | None = None):
 
     except yaml.YAMLError as e:
         print(e)
-        return {"status": "error", "message": e}
+        return JSONResponse(
+            status_code=400, content={"status": "error", "message": "invalid yaml"}
+        )
 
     with tempfile.NamedTemporaryFile(
         mode="w", delete=False, suffix=".yaml"

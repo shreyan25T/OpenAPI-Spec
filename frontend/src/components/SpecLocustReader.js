@@ -13,6 +13,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import client from "../client";
 
 const SpecLocustReader = () => {
   const { user, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
@@ -38,8 +39,8 @@ const SpecLocustReader = () => {
     setFileName(file.name);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/home/upload",
+      const response = await client.post(
+        "home/upload",
         formData,
         {
           headers: {
@@ -75,8 +76,8 @@ const SpecLocustReader = () => {
 
   const handleTest = async () => {
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/home/test?locust_flag=locust",
+      const response = await client.post(
+        "home/test?locust_flag=locust",
         { spec_content: specData, spec_file_path: specPath, spec_uuid: uuId },
         {
           headers: {
@@ -116,8 +117,8 @@ const SpecLocustReader = () => {
 
   const handleDownloadZip = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/home/download-zip?unique_session_id=${encodeURIComponent(
+      const response = await client.get(
+        `home/download-zip?unique_session_id=${encodeURIComponent(
           uuId
         )}`,
         {

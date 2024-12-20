@@ -19,6 +19,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 
 import "../assests/style.css";
+import client from "../client";
 
 const Selenium = () => {
   const gridRef = useRef();
@@ -73,8 +74,8 @@ const Selenium = () => {
         data: rowData,
       };
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/selenium/test",
+      const response = await client.post(
+        "selenium/test",
         requestData,
         {
           headers: {
@@ -97,8 +98,8 @@ const Selenium = () => {
 
   const handleDownloadZip = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/selenium/download-zip?unique_session_id=${encodeURIComponent(
+      const response = await client.get(
+        `selenium/download-zip?unique_session_id=${encodeURIComponent(
           generatedUuid
         )}`,
         {

@@ -12,6 +12,7 @@ import HttpIcon from "@mui/icons-material/Http";
 import InputAdornment from "@mui/material/InputAdornment";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useLocation } from "react-router-dom";
+import client from "../client";
 
 const PytestUpload = () => {
   const { user } = useAuth0();
@@ -34,8 +35,8 @@ const PytestUpload = () => {
     setFileName(file.name);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/home/upload",
+      const response = await client.post(
+        "home/upload",
         formData,
         {
           headers: {
@@ -60,9 +61,9 @@ const PytestUpload = () => {
   };
 
   const handleTest = async () => {
-    const url = pathname === "/locust"? "http://127.0.0.1:8000/home/test?locust_flag=locust" :"http://127.0.0.1:8000/home/test"
+    const url = pathname === "/locust"? "home/test?locust_flag=locust" :"home/test"
     try {
-      const response = await axios.post(
+      const response = await client.post(
         url,
         {
           spec_content: specData,
@@ -92,8 +93,8 @@ const PytestUpload = () => {
 
   const handleDownloadZip = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/home/download-zip?unique_session_id=${encodeURIComponent(
+      const response = await client.get(
+        `home/download-zip?unique_session_id=${encodeURIComponent(
           uuId
         )}`,
         {
