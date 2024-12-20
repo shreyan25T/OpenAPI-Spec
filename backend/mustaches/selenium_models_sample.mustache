@@ -10,7 +10,7 @@ shortWait = 10
 
 def main():
     chrome_options = Options()
-    service_obj = Service("{{pathDriver}}")
+    service_obj = Service(r"{{pathDriver}}")
     driver = webdriver.Chrome(service=service_obj)
     driver.get("{{url}}")
     {{#operations}}

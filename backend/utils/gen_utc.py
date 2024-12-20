@@ -119,7 +119,6 @@ def test_case_generator(yaml_file, locust_flag):
                     type_f, payload_p = get_schema_payload(res.content[0])
                 else:
                     type_f, payload_p = "dict", {}
-                    
 
                 if locust_flag is not None and (res.code < 200 or res.code >= 300):
                     continue

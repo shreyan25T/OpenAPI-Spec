@@ -9,6 +9,7 @@ import yaml
 from constants import *
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from selenium_test import create_sel_func
 from starlette.middleware.cors import CORSMiddleware
@@ -26,6 +27,15 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+
+# Mount the static build directory
+app.mount("/static", StaticFiles(directory="static/static"), name="static")
+
+
+# Serve index.html for the root path
+@app.get("/")
+async def serve_root():
+    return FileResponse("static/index.html")
 
 
 class SpecData(BaseModel):
@@ -151,12 +161,10 @@ async def process_data(request: Request):
 
 @app.get("/selenium/download-zip")
 async def download_zip_file(unique_session_id=str):
-    print("UNIQUE", unique_session_id)
-    zip_folder_path = os.path.join(sel_test_dir, unique_session_id)
-    zip_file_path = create_zip_file_sel(zip_folder_path)
-    print("ZIP path", zip_file_path)
     return FileResponse(
-        zip_file_path, media_type="application/zip", filename="test_files.zip"
+        "generate_codes_file.py",
+        media_type="text/x-python",
+        filename="test_selenium.py",
     )
 
 

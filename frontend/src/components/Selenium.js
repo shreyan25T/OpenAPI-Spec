@@ -106,15 +106,26 @@ const Selenium = () => {
         }
       );
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "test_files.zip");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const reader = new FileReader();
+      reader.onload = () => {
+        console.log("File content as text:", reader.result);
+        const blob = new Blob([reader.result], { type: "text/x-python" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "test_selenium.py";
+    
+        // Trigger the download
+        document.body.appendChild(link);
+        link.click();
+    
+        // Clean up
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      };
+      reader.readAsText(response.data);
     } catch (error) {
-      console.error("Error downloading zip file:", error);
+      console.error("Error downloading  file:", error);
     }
   };
 
