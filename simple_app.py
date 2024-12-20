@@ -6,3 +6,7 @@ app = FastAPI()
 async def gethome(request: Request):
     ctx = {'request': request}
     return str(ctx)
+
+@app.get('/hi')
+async def gethome(request: Request):
+    return "Hello World.!"
