@@ -1,4 +1,8 @@
 from fastapi import FastAPI, Request
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -10,3 +14,7 @@ async def gethome(request: Request):
 @app.get('/hi')
 async def gethome(request: Request):
     return "Hello World.!"
+
+@app.get('/buildnumber')
+async def gethome(request: Request):
+    return os.environ['BUILD_NUMBER']
