@@ -3,7 +3,7 @@ name: Build and deploy Python app to Azure Web App - AutoGen-TestCases-WebApp-de
 on:
   push:
     branches:
-      - webapp-trial
+      - webapp-deploy-trial
   workflow_dispatch:
 
 jobs:
