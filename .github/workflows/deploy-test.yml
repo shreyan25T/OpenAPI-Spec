@@ -3,7 +3,7 @@ name: Build and deploy Python app to Azure Web App - AutoGen-TestCases-WebApp-de
 on:
   push:
     branches:
-      - webapp-trial2
+      - webapp-trial
   workflow_dispatch:
 
 jobs:
@@ -51,7 +51,9 @@ jobs:
           name: python-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
+        run: |
+          unzip release.zip
+          echo "BUILD_NUMBER=${{ github.sha }}" >> .env
 
       
       - name: 'Deploy to Azure Web App'
