@@ -84,6 +84,32 @@ const PytestManual = () => {
   };
 
   const handlePreview = () => {
+    const payload = {
+      title: pytestTitle,
+      testCases: testCases.map((testCase) => {
+        function generateString(method, endpoint, statusCode) {
+          const endpointPath = endpoint.startsWith("/")
+            ? endpoint.slice(1)
+            : endpoint;
+
+          const queryParams = endpoint.split("?")[1] || "";
+          const formattedParams = queryParams
+            .split("&")
+            .map((param) => param.replace("=", "_"))
+            .join("_");
+          return `${method.toLowerCase()}_${statusCode}_${endpointPath}${
+            formattedParams ? `_${formattedParams}` : ""
+          }`;
+        }
+        testCase["method_name"] = generateString(
+          testCase.method,
+          testCase.endpoint,
+          testCase.statusCode
+        );
+        return testCase;
+      }),
+    };
+    console.log(payload);
     setPytestPreviewModal(true);
   };
 
