@@ -1,204 +1,196 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { Button, TextField, Typography, IconButton, Box } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Button, Box, Typography } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "./navbar/Navbar";
-import HttpIcon from "@mui/icons-material/Http";
-import InputAdornment from "@mui/material/InputAdornment";
-import client from "../client";
+import RightSidebar from "./sidebar/RightSidebar";
+import PytestEdit from "./PytestEdit";
+import PytestDataTable from "./PytestTable";
+import CustomModal from "./modal/CustomModal";
+import EditableText from "./PytestTitle";
+
+const initialValues = {
+  endpoint: "",
+  method: "GET",
+  statusCode: "200",
+  timeout: "30",
+  headers: `
+  {
+  "Content-Type": "application/json",
+  "Accept": "application/json",
+  "Authorization": "Bearer <token>",
+  "Cache-Control": "no-cache"
+  }`,
+  payload: "",
+  response: "",
+};
 
 const PytestManual = () => {
   const { user } = useAuth0();
-  const [testResult, setTestResult] = useState("");
-  const [testCases, setTestCases] = useState([
-    { url: "", statusCode: "", response: "" },
-  ]);
 
-  const handleTest = async () => {
-    try {
-      const response = await client.post(
-        "home/manual-test",
-        {
-          test_cases: testCases,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+  const [pytestTitle, setPytestTitle] = useState("PytestManual");
+
+  const [endpointEditor, setEndpointEditor] = useState(false);
+  const [pytestPreviewModal, setPytestPreviewModal] = useState(false);
+  const [editorAction, setEditorAction] = useState("ADD");
+
+  const [activeEndpointCase, setActiveEndpointCase] = useState(initialValues);
+  const [activeEndpointIndex, setActiveEndpointIndex] = useState(0);
+
+  const handleNewEndpointEditorOpen = () => {
+    setEndpointEditor(true);
+    setEditorAction("ADD");
+    setActiveEndpointCase(initialValues);
+  };
+  const handleEndpointEditorClose = () => setEndpointEditor(false);
+
+  const [testCases, setTestCases] = useState([]);
+  const addTestCases = (values) => {
+    testCases.push(values);
+  };
+
+  const handleEndpointSubmit = (values) => {
+    if (editorAction === "ADD") {
+      const [sameTestCase] = testCases.filter(
+        (testCase) =>
+          testCase.endpoint === values.endpoint &&
+          testCase.method === values.method &&
+          testCase.statusCode === values.statusCode
       );
-
-      if (response.data.status === "success") {
-        setTestResult("Test cases got generated successfully.");
+      console.log(sameTestCase);
+      if (!sameTestCase) {
+        addTestCases(values);
       } else {
-        setTestResult("Error generating test cases.");
+        toast.info("Testcase already exits");
+        return;
       }
-    } catch (error) {
-      console.error("Error testing spec:", error);
-      setTestResult("Error testing spec.");
+    } else {
+      testCases[activeEndpointIndex] = values;
     }
+    setEndpointEditor(false);
   };
 
-  const handleDownloadZip = async () => {
-    try {
-      const response = await client.get(
-        `home/download-zip?unique_session_id=${encodeURIComponent(
-          "uuId"
-        )}`,
-        {
-          responseType: "blob",
+  const handleEndpointEdit = (index) => {
+    setEditorAction("EDIT");
+    setActiveEndpointIndex(index);
+    setActiveEndpointCase(testCases[index]);
+    setEndpointEditor(true);
+  };
+
+  const handleEndpointDelete = (TIndex) => {
+    const filteredTestCases = testCases.filter((_, index) => index !== TIndex);
+    setTestCases(filteredTestCases);
+  };
+
+  const handlePreview = () => {
+    const payload = {
+      title: pytestTitle,
+      testCases: testCases.map((testCase) => {
+        function generateString(method, endpoint, statusCode) {
+          const endpointPath = endpoint.startsWith("/")
+            ? endpoint.slice(1)
+            : endpoint;
+
+          const queryParams = endpoint.split("?")[1] || "";
+          const formattedParams = queryParams
+            .split("&")
+            .map((param) => param.replace("=", "_"))
+            .join("_");
+          return `${method.toLowerCase()}_${statusCode}_${endpointPath}${
+            formattedParams ? `_${formattedParams}` : ""
+          }`;
         }
-      );
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "test_files.zip");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error downloading zip file:", error);
-    }
+        testCase["method_name"] = generateString(
+          testCase.method,
+          testCase.endpoint,
+          testCase.statusCode
+        );
+        return testCase;
+      }),
+    };
+    console.log(payload);
+    setPytestPreviewModal(true);
   };
 
-  const handleAddTestCase = () => {
-    setTestCases([...testCases, { url: "", statusCode: "", response: "" }]);
-  };
-
-  const handleDeleteTestCase = (index) => {
-    const newTestCases = testCases.filter((_, i) => i !== index);
-    setTestCases(newTestCases);
-  };
-
-  const handleTestCaseChange = (index, field, value) => {
-    const newTestCases = [...testCases];
-    newTestCases[index][field] = value;
-    setTestCases(newTestCases);
+  const handleDownload = () => {
+    alert("Downloaded Successfully");
   };
 
   return (
     <React.Fragment>
       <Navbar />
       <div
-        className="grid grid-cols-1 gap-2 justify-items-center mt-20"
-        style={{ padding: "10px" }}
-      >
+        className="grid grid-cols-1 gap-2 justify-items-center"
+        style={{ padding: "10px" }}>
         <ToastContainer />
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
-          <h3>Hi {user.name}, you can generate pytest files here</h3>
+        <Box display="flex">
+          <h3>Hi {user.name}, you can generate&nbsp;</h3>
+          <EditableText
+            inputText={pytestTitle}
+            handleInputText={setPytestTitle}
+          />
+          <h3>&nbsp;files here...</h3>
         </Box>
-        <Typography variant="h6">Test Cases</Typography>
-        <Box display="flex" justifyContent="center" marginBottom="16px">
+        <Box display="flex" justifyContent="center" marginBottom="16px" gap={2}>
           <Button
             variant="contained"
             color="secondary"
-            startIcon={<AddCircleIcon />}
-            onClick={handleAddTestCase}
-          >
-            Add Test Case
+            onClick={handleNewEndpointEditorOpen}>
+            Add new test
           </Button>
-        </Box>
-        {testCases.map((testCase, index) => (
-          <Box
-            key={index}
-            display="flex"
-            alignItems="center"
-            gap="8px"
-            marginBottom="8px"
-          >
-            <TextField
-              label="URL endpoint"
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <HttpIcon />
-                  </InputAdornment>
-                ),
-              }}
-              value={testCase.url}
-              onChange={(e) =>
-                handleTestCaseChange(index, "url", e.target.value)
-              }
-            />
-            <TextField
-              label="Status Code"
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <HttpIcon />
-                  </InputAdornment>
-                ),
-              }}
-              value={testCase.statusCode}
-              onChange={(e) =>
-                handleTestCaseChange(index, "statusCode", e.target.value)
-              }
-            />
-            <TextField
-              label="Response"
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <HttpIcon />
-                  </InputAdornment>
-                ),
-              }}
-              value={testCase.response}
-              onChange={(e) =>
-                handleTestCaseChange(index, "response", e.target.value)
-              }
-            />
-            <IconButton
-              color="secondary"
-              onClick={() => handleDeleteTestCase(index)}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        ))}
-
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
-          <Button variant="contained" color="secondary" onClick={handleTest}>
-            Test Spec
-          </Button>
-          {
+          {testCases.length !== 0 && (
             <Button
               variant="contained"
               color="secondary"
-              onClick={handleDownloadZip}
-              style={{ marginLeft: "10px" }}
-            >
-              Download Test Files
+              onClick={handlePreview}>
+              Preview
             </Button>
-          }
+          )}
         </Box>
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"4px"}
-          flexDirection={"column"}
-        >
-          <Typography variant="body1">{testResult}</Typography>
-        </Box>
+        <RightSidebar
+          isOpen={endpointEditor}
+          title="Edit Test Case"
+          onClose={handleEndpointEditorClose}>
+          <PytestEdit
+            initialValues={activeEndpointCase}
+            handleSubmit={handleEndpointSubmit}
+          />
+        </RightSidebar>
+        {testCases.length !== 0 && (
+          <PytestDataTable
+            handleDelete={handleEndpointDelete}
+            handleEdit={handleEndpointEdit}
+            values={testCases}
+          />
+        )}
+        <CustomModal
+          title={<Typography variant="h6">Pytest Preview</Typography>}
+          open={pytestPreviewModal}
+          onClose={() => {
+            setPytestPreviewModal(false);
+          }}>
+          {[...Array(10)].map((_, index) => (
+            <Typography key={index} variant="body2">
+              Line {index + 1}: Lorem ipsum dolor sit amet, consectetur
+              adipiscing elit.
+            </Typography>
+          ))}
+          <Box
+            display="flex"
+            position="absolute"
+            justifyContent="end"
+            bottom="0"
+            width="100%">
+            <Button
+              sx={{ marginX: "40px", marginY: "20px" }}
+              variant="contained"
+              color="secondary"
+              onClick={handleDownload}>
+              Download
+            </Button>
+          </Box>
+        </CustomModal>
       </div>
     </React.Fragment>
   );
