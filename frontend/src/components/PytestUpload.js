@@ -1,6 +1,13 @@
 import React, { use, useState } from "react";
 import axios from "axios";
-import { Button, TextField, Typography, IconButton, Box, Grid } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Typography,
+  IconButton,
+  Box,
+  Grid,
+} from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -10,7 +17,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "./navbar/Navbar";
 import HttpIcon from "@mui/icons-material/Http";
 import InputAdornment from "@mui/material/InputAdornment";
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useLocation } from "react-router-dom";
 import client from "../client";
 
@@ -25,8 +32,8 @@ const PytestUpload = () => {
   const [testCases, setTestCases] = useState([
     { url: "", statusCode: "", response: "" },
   ]);
-  const [previewData, setPreviewData] = useState("")
-  const {pathname} = useLocation()
+  const [previewData, setPreviewData] = useState("");
+  const { pathname } = useLocation();
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -35,15 +42,11 @@ const PytestUpload = () => {
     setFileName(file.name);
 
     try {
-      const response = await client.post(
-        "home/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await client.post("home/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.data.status === "success") {
         let fileContent = response.data.data.spec_content;
@@ -61,7 +64,8 @@ const PytestUpload = () => {
   };
 
   const handleTest = async () => {
-    const url = pathname === "/locust"? "home/test?locust_flag=locust" :"home/test"
+    const url =
+      pathname === "/locust" ? "home/test?locust_flag=locust" : "home/test";
     try {
       const response = await client.post(
         url,
@@ -76,12 +80,12 @@ const PytestUpload = () => {
         }
       );
 
-      console.log('resp------',response.data)
+      console.log("resp------", response.data);
 
       const reader = new FileReader();
       reader.onload = () => {
         console.log("File content as text:", reader.result);
-        setPreviewData(reader.result)
+        setPreviewData(reader.result);
       };
       reader.readAsText(response.data);
       setIsFileUploaded(true);
@@ -94,9 +98,7 @@ const PytestUpload = () => {
   const handleDownloadZip = async () => {
     try {
       const response = await client.get(
-        `home/download-zip?unique_session_id=${encodeURIComponent(
-          uuId
-        )}`,
+        `home/download-zip?unique_session_id=${encodeURIComponent(uuId)}`,
         {
           responseType: "blob",
         }
@@ -115,7 +117,8 @@ const PytestUpload = () => {
   };
   const downloadPythonFile = () => {
     const fileContent = previewData; // Get the content of the TextField
-    const fileName = pathname === "/locust"? "locust_script.py": "pytest_script.py"; // Desired file name
+    const fileName =
+      pathname === "/locust" ? "locust_script.py" : "pytest_script.py"; // Desired file name
 
     // Create a Blob with the Python code and specify the MIME type
     const blob = new Blob([fileContent], { type: "text/x-python" });
@@ -146,102 +149,75 @@ const PytestUpload = () => {
   return (
     <React.Fragment>
       <Navbar />
-      <div
-        className="w-full p-3"
-      >
+      <div className="w-full p-3">
         <ToastContainer />
         <div className=" grid grid-cols-5 gap-y-4">
           <div className=" md:col-span-2 col-span-full">
-          <TextField
-          placeholder="OpenAPI Spec"
-          variant="outlined"
-          multiline
-          InputLabelProps={{
-            shrink: true, // Keep the label visible if both placeholder and label are used
-          }}
-          rows={22}
-          value={specData}
-          onChange={(e) => setSpecData(e.target.value)}
-          fullWidth
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "gray",
-              },
-              "&:hover fieldset": {
-                borderColor: "black",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "gray",
-                borderWidth: "1px"
-              },
-            },
-          }}
-        />
+            <TextField
+              placeholder="OpenAPI Spec"
+              variant="outlined"
+              multiline
+              InputProps={{
+                style: { fontFamily: "monospace" },
+              }}
+              rows={22}
+              value={specData}
+              onChange={(e) => setSpecData(e.target.value)}
+              fullWidth
+            />
           </div>
           <div className=" col-span-full md:col-span-1 flex flex-col items-center justify-center gap-3">
-          <input
-            type="file"
-            onChange={handleUpload}
-            style={{ display: "none" }}
-            id="upload-file-input"
-          />
+            <input
+              type="file"
+              onChange={handleUpload}
+              style={{ display: "none" }}
+              id="upload-file-input"
+            />
             <label htmlFor="upload-file-input">
-            <Button
-              variant="contained"
-              color="secondary"
-              component="span"
-              style={{width: '200px'}}
-              startIcon={<CloudUploadIcon />}
-            >
-              Upload File
-            </Button>
-          </label>
-          <Typography variant="body1">{fileName}</Typography>
-          {specData && <Button variant="contained" color="secondary"               
-          style={{ width: '200px'}}
-          endIcon={ <ChevronRightIcon></ChevronRightIcon>}
-          onClick={handleTest}>
-            Preview
-          </Button>}
-          {previewData && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={downloadPythonFile}
-              style={{ width: '200px'}}
-              >
-              Download
-            </Button>
-          )}
+              <Button
+                variant="contained"
+                color="secondary"
+                component="span"
+                style={{ width: "200px" }}
+                startIcon={<CloudUploadIcon />}>
+                Upload File
+              </Button>
+            </label>
+            <Typography variant="body1">{fileName}</Typography>
+            {specData && (
+              <Button
+                variant="contained"
+                color="secondary"
+                style={{ width: "200px" }}
+                endIcon={<ChevronRightIcon></ChevronRightIcon>}
+                onClick={handleTest}>
+                Preview
+              </Button>
+            )}
+            {previewData && (
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={downloadPythonFile}
+                style={{ width: "200px" }}>
+                Download
+              </Button>
+            )}
           </div>
           <div className=" md:col-span-2 col-span-full">
-          <TextField
-           placeholder={ pathname==="/locust"? "Locust File":"Pytest File"}
-           variant="outlined"
-           multiline
-           InputLabelProps={{
-             shrink: true, // Keep the label visible if both placeholder and label are used
-           }}
-           rows={22}
-           value={previewData}
-           onChange={(e) => setPreviewData(e.target.value)}
-           fullWidth
-           sx={{
-             "& .MuiOutlinedInput-root": {
-               "& fieldset": {
-                 borderColor: "gray",
-               },
-               "&:hover fieldset": {
-                 borderColor: "black",
-               },
-               "&.Mui-focused fieldset": {
-                 borderColor: "gray",
-                 borderWidth: "1px"
-               },
-             },
-           }}
-        />
+            <TextField
+              placeholder={
+                pathname === "/locust" ? "Locust File" : "Pytest File"
+              }
+              variant="outlined"
+              multiline
+              InputProps={{
+                style: { fontFamily: "monospace" },
+              }}
+              rows={22}
+              value={previewData}
+              fullWidth
+            />
           </div>
         </div>
       </div>

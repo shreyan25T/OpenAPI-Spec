@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, TextField } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -9,6 +9,7 @@ import PytestEdit from "./PytestEdit";
 import PytestDataTable from "./PytestTable";
 import CustomModal from "./modal/CustomModal";
 import EditableText from "./PytestTitle";
+import client from "../client";
 
 const initialValues = {
   endpoint: "",
@@ -38,6 +39,8 @@ const PytestManual = () => {
   const [activeEndpointCase, setActiveEndpointCase] = useState(initialValues);
   const [activeEndpointIndex, setActiveEndpointIndex] = useState(0);
 
+  const [pytestPreviewText, setPytestPreviewText] = useState("");
+
   const handleNewEndpointEditorOpen = () => {
     setEndpointEditor(true);
     setEditorAction("ADD");
@@ -58,7 +61,6 @@ const PytestManual = () => {
           testCase.method === values.method &&
           testCase.statusCode === values.statusCode
       );
-      console.log(sameTestCase);
       if (!sameTestCase) {
         addTestCases(values);
       } else {
@@ -83,10 +85,11 @@ const PytestManual = () => {
     setTestCases(filteredTestCases);
   };
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
+    const tempTestCases = structuredClone(testCases);
     const payload = {
       title: pytestTitle,
-      testCases: testCases.map((testCase) => {
+      test_cases: tempTestCases.map((testCase) => {
         function generateString(method, endpoint, statusCode) {
           const endpointPath = endpoint.startsWith("/")
             ? endpoint.slice(1)
@@ -101,20 +104,66 @@ const PytestManual = () => {
             formattedParams ? `_${formattedParams}` : ""
           }`;
         }
+        testCase["headers"] = JSON.parse(testCase["headers"]);
+        testCase["has_payload"] = !!testCase.payload;
+        testCase["payload"] = testCase["has_payload"]
+          ? JSON.parse(testCase["payload"])
+          : {};
+        testCase["response"] = JSON.parse(testCase["response"]);
+        testCase["response_object_type"] = Array.isArray(testCase["response"])
+          ? "list"
+          : "dict";
         testCase["method_name"] = generateString(
           testCase.method,
           testCase.endpoint,
           testCase.statusCode
         );
+        testCase["has_payload"] = !!testCase.payload;
+
         return testCase;
       }),
     };
-    console.log(payload);
+    try {
+      const response = await client.post("home/manual-test", payload, {
+        responseType: "blob", // Treat the response as binary data (file)
+      });
+      console.log("resp------", response.data);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        console.log("File content as text:", reader.result);
+        setPytestPreviewText(reader.result);
+      };
+      reader.readAsText(response.data);
+    } catch (error) {
+      console.error("Error previewing the test cases:", error);
+      toast.error("Error previewing the test cases");
+    }
     setPytestPreviewModal(true);
   };
 
   const handleDownload = () => {
-    alert("Downloaded Successfully");
+    const fileContent = pytestPreviewText; // Get the content of the TextField
+    const fileName = `${pytestTitle}.py`; // Desired file name
+
+    // Create a Blob with the Python code and specify the MIME type
+    const blob = new Blob([fileContent], { type: "text/x-python" });
+
+    // Generate a URL for the Blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a link element
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -170,12 +219,16 @@ const PytestManual = () => {
           onClose={() => {
             setPytestPreviewModal(false);
           }}>
-          {[...Array(10)].map((_, index) => (
-            <Typography key={index} variant="body2">
-              Line {index + 1}: Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit.
-            </Typography>
-          ))}
+          <TextField
+            multiline
+            minRows={6}
+            value={pytestPreviewText}
+            fullWidth
+            InputProps={{
+              style: { fontFamily: "monospace" },
+            }}
+            variant="outlined"
+          />
           <Box
             display="flex"
             position="absolute"
@@ -183,7 +236,7 @@ const PytestManual = () => {
             bottom="0"
             width="100%">
             <Button
-              sx={{ marginX: "40px", marginY: "20px" }}
+              sx={{ marginX: "40px", marginTop: "22px", marginBottom: "10px" }}
               variant="contained"
               color="secondary"
               onClick={handleDownload}>

@@ -15,7 +15,12 @@ from selenium_test import create_sel_func
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 from utils.events import app_startup
-from utils.gen_utc import create_zip_file, create_zip_file_sel, test_case_generator
+from utils.gen_utc import (
+    create_zip_file,
+    create_zip_file_sel,
+    test_case_generator,
+    manual_test_case_generator,
+)
 from utils.selenium_gen import generate_code
 
 app = FastAPI()
@@ -46,6 +51,7 @@ class SpecData(BaseModel):
 
 
 class ManualTestCases(BaseModel):
+    title: str
     test_cases: list
 
 
@@ -110,12 +116,8 @@ async def test(spec_data: SpecData, locust_flag: str | None = None):
 
 # Manual Test cases generation
 @app.post("/home/manual-test")
-async def test(manual_data: ManualTestCases):
-    uuid_str = str(uuid.uuid4())
-    print("uuid", uuid_str)
-    print(manual_data.test_cases)
-
-    return {"status": "success"}
+async def manual_test(manual_data: ManualTestCases):
+    return manual_test_case_generator(manual_data)
 
 
 # Download ZIP file

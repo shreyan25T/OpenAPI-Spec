@@ -11,6 +11,7 @@ from constants import (
     selenium_mustache_sample,
     test_dir,
     test_mustache_sample,
+    test_mustache_manual,
 )
 from fastapi.responses import FileResponse
 from openapi_parser import parse
@@ -61,7 +62,6 @@ def create_zip_file_sel(zip_folder_path):
 
 
 def test_case_generator(yaml_file, locust_flag):
-
     content = parse(yaml_file)
     print("CONTENT", yaml_file)
 
@@ -161,6 +161,25 @@ def test_case_generator(yaml_file, locust_flag):
 
     # with open(os.path.join(output_path, f"test_{filename}_manager.py"), "w") as f:
     #     f.write(html.unescape(rendered))
+
+
+def manual_test_case_generator(manual_data):
+    print("Manual Data", manual_data)
+    with open(test_mustache_manual, "r") as f:
+        template_str = f.read()
+
+    rendered = pystache.render(
+        template_str,
+        manual_data,
+    )
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".py") as temp_file:
+        temp_file.write(html.unescape(rendered))
+    return FileResponse(
+        temp_file.name,
+        media_type="text/x-python",  # MIME type for Python files
+        filename=f"test_{manual_data.title}_manager.py",  # Filename to show in the download
+    )
 
 
 if __name__ == "__main__":
