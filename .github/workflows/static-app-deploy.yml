@@ -17,6 +17,8 @@ jobs:
       - name: Adding .env
         run: |
           echo "DISABLE_ESLINT_PLUGIN=true" > frontend/.env
+          echo "REACT_APP_DOMAIN=${{ secrets.REACT_APP_DOMAIN }}" >> frontend/.env
+          echo "REACT_APP_CLIENT_ID=${{ secrets.REACT_APP_CLIENT_ID }}" >> frontend/.env
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
