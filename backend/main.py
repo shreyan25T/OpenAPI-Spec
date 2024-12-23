@@ -52,6 +52,7 @@ class SpecData(BaseModel):
 
 class ManualTestCases(BaseModel):
     title: str
+    base_url: str
     test_cases: list
 
 

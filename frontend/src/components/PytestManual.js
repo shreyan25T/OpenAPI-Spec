@@ -31,6 +31,7 @@ const PytestManual = () => {
   const { user } = useAuth0();
 
   const [pytestTitle, setPytestTitle] = useState("PytestManual");
+  const [pytestBaseURL, setPytestBaseURL] = useState("http://127.0.0.1:8000");
 
   const [endpointEditor, setEndpointEditor] = useState(false);
   const [pytestPreviewModal, setPytestPreviewModal] = useState(false);
@@ -85,10 +86,10 @@ const PytestManual = () => {
     setTestCases(filteredTestCases);
   };
 
-  const handlePreview = async () => {
-    const tempTestCases = structuredClone(testCases);
+  const handlePreviewAPI = async (tempTestCases) => {
     const payload = {
       title: pytestTitle,
+      base_url: pytestBaseURL,
       test_cases: tempTestCases.map((testCase) => {
         function generateString(method, endpoint, statusCode) {
           const endpointPath = endpoint.startsWith("/")
@@ -142,6 +143,18 @@ const PytestManual = () => {
     setPytestPreviewModal(true);
   };
 
+  const handlePreview = async () => {
+    const tempTestCases = structuredClone(testCases);
+    await handlePreviewAPI(tempTestCases);
+  };
+
+  const handleIndividualPreview = async (IIndex) => {
+    const IndividualTestCase = structuredClone(
+      testCases.filter((_, index) => index === IIndex)
+    );
+    await handlePreviewAPI(IndividualTestCase);
+  };
+
   const handleDownload = () => {
     const fileContent = pytestPreviewText; // Get the content of the TextField
     const fileName = `${pytestTitle}.py`; // Desired file name
@@ -164,6 +177,8 @@ const PytestManual = () => {
     // Clean up
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    setPytestPreviewModal(false);
   };
 
   return (
@@ -173,13 +188,25 @@ const PytestManual = () => {
         className="grid grid-cols-1 gap-2 justify-items-center"
         style={{ padding: "10px" }}>
         <ToastContainer />
-        <Box display="flex">
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
           <h3>Hi {user.name}, you can generate&nbsp;</h3>
           <EditableText
             inputText={pytestTitle}
             handleInputText={setPytestTitle}
           />
-          <h3>&nbsp;files here...</h3>
+          <h3>&nbsp;files with base URL:&nbsp;</h3>
+          <EditableText
+            inputText={pytestBaseURL}
+            handleInputText={setPytestBaseURL}
+          />
+          <h3>&nbsp;here...</h3>
         </Box>
         <Box display="flex" justifyContent="center" marginBottom="16px" gap={2}>
           <Button
@@ -210,6 +237,7 @@ const PytestManual = () => {
           <PytestDataTable
             handleDelete={handleEndpointDelete}
             handleEdit={handleEndpointEdit}
+            handleIndividualPreview={handleIndividualPreview}
             values={testCases}
           />
         )}

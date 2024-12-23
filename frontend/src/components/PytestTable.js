@@ -10,13 +10,19 @@ import {
   Button,
   TablePagination,
   Tooltip,
+  IconButton,
 } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
-const PytestDataTable = ({ handleEdit, handleDelete, values }) => {
+const PytestDataTable = ({
+  handleEdit,
+  handleDelete,
+  handleIndividualPreview,
+  values,
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Truncate long text and show the full value in a tooltip
   const truncateText = (text, limit = 20) => {
     if (text.length > limit) {
       return (
@@ -28,12 +34,10 @@ const PytestDataTable = ({ handleEdit, handleDelete, values }) => {
     return text;
   };
 
-  // Handle page change
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  // Handle rows per page change
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -76,11 +80,26 @@ const PytestDataTable = ({ handleEdit, handleDelete, values }) => {
                       sx={{ marginRight: 1 }}>
                       Edit
                     </Button>
+                    <IconButton
+                      color="secondary"
+                      size="small"
+                      sx={{
+                        marginRight: 1,
+                        borderColor: "#ED8109",
+                        borderRadius: "100%",
+                        borderWidth: "4px",
+                      }}
+                      onClick={() => {
+                        handleIndividualPreview(index);
+                      }}>
+                      <VisibilityIcon />
+                    </IconButton>
                     <Button
                       variant="contained"
                       color="secondary"
                       size="small"
-                      onClick={() => handleDelete(index)}>
+                      onClick={() => handleDelete(index)}
+                      sx={{ marginRight: 1 }}>
                       Delete
                     </Button>
                   </TableCell>
