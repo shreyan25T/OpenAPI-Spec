@@ -22,4 +22,4 @@ jobs:
           repo_token: ${{ secrets.GIT_REPO_TOKEN }}
           action: "upload"
           app_location: "frontend/"
-          output_location: "dist/"
+          output_location: "build/"
