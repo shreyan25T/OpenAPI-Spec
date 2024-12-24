@@ -1,3 +1,4 @@
+import html
 import os
 import tempfile
 import uuid
@@ -18,8 +19,8 @@ from utils.events import app_startup
 from utils.gen_utc import (
     create_zip_file,
     create_zip_file_sel,
-    test_case_generator,
     manual_test_case_generator,
+    test_case_generator,
 )
 from utils.selenium_gen import generate_code
 
@@ -27,8 +28,10 @@ app = FastAPI()
 app.add_event_handler("startup", app_startup)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000",
-                   "https://kind-sand-04f40700f.4.azurestaticapps.net"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://kind-sand-04f40700f.4.azurestaticapps.net",
+    ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -165,17 +168,39 @@ async def process_data(request: Request):
     }
 
 
-@app.get("/selenium/download-zip")
-async def download_zip_file(unique_session_id=str):
+@app.post("/selenium/download-zip")
+async def download_selenium_file(request: Request):
+    received_data = await request.json()
+    url = received_data.get("url", "")
+    pathDriver = received_data.get("pathDriver", "")
+    data = received_data.get("data", [])
+    print("data", data)
+    # Process the received data
+    df = pd.DataFrame(data)
+    if "actionInput" not in df.columns:
+        df["actionInput"] = ""
+
+    df["actionInput"] = df["actionInput"].fillna("")
+    df["useWait"] = df["byWait"].str.len() > 0
+    rendered = generate_code(
+        {
+            "url": url,
+            "pathDriver": pathDriver,
+            "operations": df.fillna("").to_dict(orient="records"),
+        }
+    )
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".py") as temp_file:
+        temp_file.write(html.unescape(rendered))
     return FileResponse(
-        "generate_codes_file.py",
+        temp_file.name,
         media_type="text/x-python",
         filename="test_selenium.py",
     )
 
+
 @app.get("/buildnumber")
 async def get_buildnumber():
-    return os.environ['BUILD_NUMBER']
+    return os.environ["BUILD_NUMBER"]
 
 
 if __name__ == "__main__":
