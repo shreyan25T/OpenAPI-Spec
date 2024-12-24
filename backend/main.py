@@ -172,6 +172,10 @@ async def download_zip_file(unique_session_id=str):
         filename="test_selenium.py",
     )
 
+@app.get("/buildnumber")
+async def get_buildnumber():
+    return os.environ['BUILD_NUMBER']
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
