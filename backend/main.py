@@ -27,9 +27,10 @@ app = FastAPI()
 app.add_event_handler("startup", app_startup)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000",
+                   "https://kind-sand-04f40700f.4.azurestaticapps.net"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
