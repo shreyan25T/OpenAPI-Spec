@@ -3,7 +3,7 @@ name: Build and deploy Python app to Azure Web App - AutoGen-TestCases-WebApp-de
 on:
   push:
     branches:
-      - uat-deploy
+      - be-upload-fix
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         run: pip install -r backend/requirements.txt
 
       - name: Zip artifact for deployment
-        run: zip release.zip backend/* -r
+        run: cd backend && zip release.zip ./* -r && mv release.zip ../release.zip
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
