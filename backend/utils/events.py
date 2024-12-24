@@ -1,4 +1,5 @@
 import os.path
+from dotenv import load_dotenv
 
 from constants import download_dir, test_dir
 
@@ -6,4 +7,5 @@ from constants import download_dir, test_dir
 def app_startup():
     if not os.path.exists(download_dir): os.mkdir(download_dir)
     if not os.path.exists(test_dir): os.mkdir(test_dir)
+    load_dotenv()
 
