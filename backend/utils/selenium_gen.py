@@ -9,7 +9,9 @@ def generate_code(methods):
     rendered = pystache.render(template_str, methods)
     rendered_str = rendered.replace("&quot;", '"')
 
-    with open(f"generate_codes_file.py", "w") as f:
-        f.write(rendered_str)
+    return rendered_str
 
-    print(rendered)
+    # with open(f"generate_codes_file.py", "w") as f:
+    #     f.write(rendered_str)
+
+    # print(rendered)

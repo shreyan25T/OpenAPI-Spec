@@ -10,11 +10,11 @@ shortWait = 10
 
 def main():
     chrome_options = Options()
-    service_obj = Service(r"C:\Users\revanth.adiga\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe")
+    service_obj = Service(r"")
     driver = webdriver.Chrome(service=service_obj)
-    driver.get("https://rahulshettyacademy.com/angularpractice/")
-    driver.find_element(By.NAME, "email").send_keys("exampleInput")
-    driver.find_element(By.ID, "exampleInputPassword1").send_keys("password")
+    driver.get("")
+    driver.find_element(By.CSS_SELECTOR, "username").get_attribute("id")
+    driver.find_element(By.CLASS_NAME, "username").get_text()
     time.sleep(2)
     driver.close()
 
