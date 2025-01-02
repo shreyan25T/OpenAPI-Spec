@@ -6,8 +6,7 @@ on:
       - uat-deploy
     paths:
       - "*"
-    paths-ignore:
-      - frontend/*
+      - "!frontend/**"
   workflow_dispatch:
 
 jobs:

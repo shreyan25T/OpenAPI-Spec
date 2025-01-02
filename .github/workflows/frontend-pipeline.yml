@@ -6,8 +6,7 @@ on:
       - uat-deploy
     paths:
       - "*"
-    paths-ignore:
-      - backend/*
+      - "!backend/**"
 
 jobs:
   build_and_deploy_job:
