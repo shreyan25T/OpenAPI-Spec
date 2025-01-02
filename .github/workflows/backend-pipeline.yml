@@ -5,10 +5,9 @@ on:
     branches:
       - uat-deploy
     paths:
-      include:
-        - "*"
-      exclude:
-        - frontend/*
+      - "*"
+    paths-ignore:
+      - frontend/*
   workflow_dispatch:
 
 jobs:
