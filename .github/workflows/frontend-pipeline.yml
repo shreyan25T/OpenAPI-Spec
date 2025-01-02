@@ -1,9 +1,14 @@
-name: Minimal Azure Static Web App deploy
+name: AutoGen-TestCases Frontend (React)
 
 on:
   push:
     branches:
-      - uat-deploy 
+      - uat-deploy
+    paths:
+      include:
+        - "*"
+      exclude:
+        - backend/*
 
 jobs:
   build_and_deploy_job:
