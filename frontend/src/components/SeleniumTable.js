@@ -88,123 +88,189 @@ const SeleniumTable = ({
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
                 <>
-                  <TableRow key={index}>
-                    <StyledTableCell>
-                      <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => handleChange(index)}>
-                        {open.includes(index) ? (
-                          <KeyboardArrowUpIcon />
-                        ) : (
-                          <KeyboardArrowDownIcon />
-                        )}
-                      </IconButton>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {row.byWait?.split('_').join(' ') || '-'}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {row.by?.split('_').join(' ')}
-                    </StyledTableCell>
-                    <StyledTableCell>{row.byInput || '-'}</StyledTableCell>
-                    <StyledTableCell>
-                      {row.action?.split('_').join(' ')}
-                    </StyledTableCell>
-                    <StyledTableCell>{row.actionInput || '-'}</StyledTableCell>
-                    <StyledTableCell>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          gap: 2,
-                        }}>
-                        <EditIcon
-                          onClick={() => handleEdit(index)}
+                  {row?.actionChainFlag ? (
+                    <>
+                      <TableRow key={index}>
+                        <StyledTableCell>
+                          <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={() => handleChange(index)}>
+                            {open.includes(index) ? (
+                              <KeyboardArrowUpIcon />
+                            ) : (
+                              <KeyboardArrowDownIcon />
+                            )}
+                          </IconButton>
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          {row.actionChains[0].byWait?.split('_').join(' ') ||
+                            '-'}
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          {row.actionChains[0].by?.split('_').join(' ')}
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          {row.actionChains[0].byInput || '-'}
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          {row.actionChains[0].action?.split('_').join(' ')}
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          {row.actionChains[0].actionInput || '-'}
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: 2,
+                            }}>
+                            <EditIcon
+                              onClick={() => handleActionChainEdit(index, 0)}
+                              sx={{
+                                color: '#f7901d',
+                                marginRight: 1,
+                                cursor: 'pointer',
+                              }}
+                            />
+                            <DeleteIcon
+                              onClick={() => handleActionChainDelete(index, 0)}
+                              sx={{ color: '#f7901d', cursor: 'pointer' }}
+                            />
+                          </Box>
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          {row?.actionChains?.length === 1 && (
+                            <Button
+                              variant="contained"
+                              color="secondary"
+                              onClick={() => handleActionChainEditorOpen(index)}
+                              style={{ flex: 1 }}>
+                              Add
+                            </Button>
+                          )}
+                        </StyledTableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell colSpan={12} style={{ padding: 0 }}>
+                          <Collapse
+                            in={open.includes(index)}
+                            timeout="auto"
+                            unmountOnExit>
+                            <Table>
+                              <TableBody>
+                                {row?.actionChains?.slice(1).map((val, i) => (
+                                  <TableRow>
+                                    <StyledTableCell></StyledTableCell>
+                                    <StyledTableCell>-</StyledTableCell>
+                                    <StyledTableCell>
+                                      {val.by?.split('_').join(' ')}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                      {val.byInput || '-'}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                      {val.action?.split('_').join(' ')}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                      {val.actionInput || '-'}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                      <Box
+                                        sx={{
+                                          display: 'flex',
+                                          flexDirection: 'row',
+                                          alignItems: 'center',
+                                          gap: 2,
+                                        }}>
+                                        <EditIcon
+                                          onClick={() =>
+                                            handleActionChainEdit(index, i + 1)
+                                          }
+                                          sx={{
+                                            color: '#f7901d',
+                                            marginRight: 1,
+                                            cursor: 'pointer',
+                                          }}
+                                        />
+                                        <DeleteIcon
+                                          onClick={() =>
+                                            handleActionChainDelete(
+                                              index,
+                                              i + 1
+                                            )
+                                          }
+                                          sx={{
+                                            color: '#f7901d',
+                                            cursor: 'pointer',
+                                          }}
+                                        />
+                                      </Box>
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                      {i === row?.actionChains?.length - 2 && (
+                                        <Button
+                                          variant="contained"
+                                          color="secondary"
+                                          onClick={() =>
+                                            handleActionChainEditorOpen(index)
+                                          }
+                                          style={{ flex: 1 }}>
+                                          Add
+                                        </Button>
+                                      )}
+                                    </StyledTableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  ) : (
+                    <TableRow key={index}>
+                      <StyledTableCell></StyledTableCell>
+                      <StyledTableCell>
+                        {row.byWait?.split('_').join(' ') || '-'}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        {row.by?.split('_').join(' ')}
+                      </StyledTableCell>
+                      <StyledTableCell>{row.byInput || '-'}</StyledTableCell>
+                      <StyledTableCell>
+                        {row.action?.split('_').join(' ')}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        {row.actionInput || '-'}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <Box
                           sx={{
-                            color: '#f7901d',
-                            marginRight: 1,
-                            cursor: 'pointer',
-                          }}
-                        />
-                        <DeleteIcon
-                          onClick={() => handleDelete(index)}
-                          sx={{ color: '#f7901d', cursor: 'pointer' }}
-                        />
-                      </Box>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => handleActionChainEditorOpen(index)}
-                        style={{ flex: 1 }}>
-                        Add
-                      </Button>
-                    </StyledTableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell colSpan={12} style={{ padding: 0 }}>
-                      <Collapse
-                        in={open.includes(index)}
-                        timeout="auto"
-                        unmountOnExit>
-                        <Table>
-                          <TableBody>
-                            {row?.actionChain?.map((val, i) => (
-                              <TableRow>
-                                <StyledTableCell></StyledTableCell>
-                                <StyledTableCell>-</StyledTableCell>
-                                <StyledTableCell>
-                                  {val.by?.split('_').join(' ')}
-                                </StyledTableCell>
-                                <StyledTableCell>
-                                  {val.byInput || '-'}
-                                </StyledTableCell>
-                                <StyledTableCell>
-                                  {val.action?.split('_').join(' ')}
-                                </StyledTableCell>
-                                <StyledTableCell>
-                                  {val.actionInput || '-'}
-                                </StyledTableCell>
-                                <StyledTableCell>
-                                  <Box
-                                    sx={{
-                                      display: 'flex',
-                                      flexDirection: 'row',
-                                      alignItems: 'center',
-                                      gap: 2,
-                                    }}>
-                                    <EditIcon
-                                      onClick={() =>
-                                        handleActionChainEdit(index, i)
-                                      }
-                                      sx={{
-                                        color: '#f7901d',
-                                        marginRight: 1,
-                                        cursor: 'pointer',
-                                      }}
-                                    />
-                                    <DeleteIcon
-                                      onClick={() =>
-                                        handleActionChainDelete(index, i)
-                                      }
-                                      sx={{
-                                        color: '#f7901d',
-                                        cursor: 'pointer',
-                                      }}
-                                    />
-                                  </Box>
-                                </StyledTableCell>
-                                <StyledTableCell></StyledTableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 2,
+                          }}>
+                          <EditIcon
+                            onClick={() => handleEdit(index)}
+                            sx={{
+                              color: '#f7901d',
+                              marginRight: 1,
+                              cursor: 'pointer',
+                            }}
+                          />
+                          <DeleteIcon
+                            onClick={() => handleDelete(index)}
+                            sx={{ color: '#f7901d', cursor: 'pointer' }}
+                          />
+                        </Box>
+                      </StyledTableCell>
+                      <StyledTableCell></StyledTableCell>
+                    </TableRow>
+                  )}
                 </>
               ))}
           </TableBody>

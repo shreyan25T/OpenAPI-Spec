@@ -1,12 +1,9 @@
-import React, { useState, useRef } from 'react';
-import { AgGridReact } from 'ag-grid-react';
+import React, { useState } from 'react';
 import {
   Button,
   MenuItem,
   Select,
   TextField,
-  Tooltip,
-  Snackbar,
   Typography,
   Link,
   Box,
@@ -17,15 +14,16 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import Navbar from './navbar/Navbar';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CustomModal from './modal/CustomModal';
 import RightSidebar from './sidebar/RightSidebar';
 import '../assests/style.css';
 import client from '../client';
 import SeleniumTable from './SeleniumTable';
 import SeleniumEdit from './SeleniumEdit';
-import CustomModal from './modal/CustomModal';
+import ActionChainEdit from './ActionChainEdit';
 
 const initialValues = {
+  actionChainFlag: false,
   byWait: '',
   by: 'NAME',
   byInput: '',
@@ -33,20 +31,28 @@ const initialValues = {
   actionInput: '',
 };
 
+const actionChainInitValues = {
+  byWait: '',
+  by: 'NAME',
+  byInput: '',
+  action: 'click',
+  actionInput: '',
+};
+
 const Selenium = () => {
-  const gridRef = useRef();
   const [url, setUrl] = useState('');
   const [pathDriver, setPathDriver] = useState('');
   const [driver, setDriver] = useState('Windows');
   const [rowData, setRowData] = useState([]);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [isFileUploaded, setIsFileUploaded] = useState(false);
-  const [generatedUuid, setGeneratedUuid] = useState('');
   const [openSidebar, setOpenSidebar] = useState(false);
   const [editorAction, setEditorAction] = useState('ADD');
   const [activeOperation, setActiveOperation] = useState(initialValues);
   const [activeOperationId, setActiveOperationId] = useState();
+  const [editActionChain, setEditActionChain] = useState(false);
+  const [activeActionChainId, setActiveActionChainId] = useState();
+  const [activeActionChain, setActiveActionChain] = useState(
+    actionChainInitValues
+  );
   const [previewData, setPreviewData] = useState('');
   const [previewModal, setPreviewModal] = useState(false);
 
@@ -54,44 +60,55 @@ const Selenium = () => {
     const updatedData = rowData.filter((_, i) => i !== index);
     setRowData(updatedData);
   };
-
-  // const onTestButtonClick = async () => {
-  //   try {
-  //     const requestData = {
-  //       url: url,
-  //       pathDriver: pathDriver,
-  //       driver: driver,
-  //       data: rowData,
-  //     };
-
-  //     const response = await client.post('selenium/test', requestData, {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-  //     const data = response.data;
-  //     setGeneratedUuid(data.uuid);
-  //     console.log(generatedUuid);
-  //     setSnackbarMessage(data.message);
-  //     setIsFileUploaded(true);
-  //     setOpenSnackbar(true);
-  //   } catch (error) {
-  //     setSnackbarMessage('Error: Unable to generate Selenium script');
-  //     setOpenSnackbar(true);
-  //     console.error('Error:', error);
-  //   }
-  // };
+  const handleActionChainDelete = (index, i) => {
+    const copiedRows = [...rowData];
+    const updatedArr = copiedRows[index].actionChains?.filter(
+      (_, n) => n !== i
+    );
+    if (updatedArr.length === 0) {
+      setRowData((rowData) => rowData.filter((_, n) => n !== index));
+    } else {
+      copiedRows[index].actionChains = updatedArr;
+      setRowData(copiedRows);
+    }
+  };
 
   const handleNewEditorOpen = () => {
     setOpenSidebar(true);
+    setEditActionChain(false);
     setEditorAction('ADD');
     setActiveOperation(initialValues);
   };
 
+  const createActionChain = () => {
+    setOpenSidebar(true);
+    setEditActionChain(true);
+    setEditorAction('CREATE');
+  };
+
+  const handleActionChainEditorOpen = (index) => {
+    setOpenSidebar(true);
+    setEditActionChain(true);
+    setEditorAction('ADD');
+    setActiveOperationId(index);
+    setActiveOperation(initialValues);
+    setActiveActionChain(actionChainInitValues);
+  };
+
   const handleRowDataEdit = (index) => {
+    setEditActionChain(false);
     setEditorAction('EDIT');
     setActiveOperationId(index);
     setActiveOperation(rowData[index]);
+    setOpenSidebar(true);
+  };
+
+  const handleActionChainEdit = (index, i) => {
+    setEditActionChain(true);
+    setEditorAction('EDIT');
+    setActiveActionChainId(i);
+    setActiveOperationId(index);
+    setActiveActionChain(rowData[index].actionChains[i]);
     setOpenSidebar(true);
   };
 
@@ -155,26 +172,41 @@ const Selenium = () => {
     setOpenSidebar(false);
   };
 
+  const handleActionChainSubmit = (values) => {
+    if (editorAction === 'CREATE') {
+      setRowData((rowData) => [
+        ...rowData,
+        { actionChainFlag: true, actionChains: [values] },
+      ]);
+    } else if (editorAction === 'ADD') {
+      rowData[activeOperationId].actionChains.push(values);
+    } else {
+      rowData[activeOperationId].actionChains[activeActionChainId] = values;
+    }
+    setOpenSidebar(false);
+  };
+
   return (
     <React.Fragment>
       <Navbar />
       <div
-        className="grid grid-cols-1 gap-2 justify-items-center mt-20"
+        className="grid grid-cols-1 gap-2 justify-items-center mt-6"
         style={{ padding: '10px' }}>
-        <div className="row-flex" style={{ display: 'flex', width: '100%' }}>
+        <div className=" flex md:flex-row flex-col w-full items-strech gap-3">
           <TextField
             label="Add your local driver path here"
             value={pathDriver}
             onChange={(e) => setPathDriver(e.target.value)}
             fullWidth
             variant="outlined"
-            style={{ flex: 6, marginRight: '10px' }}
+            style={{ flex: 6 }}
           />
           <Box
             sx={{
               flex: 6,
               backgroundColor: 'rgba(247, 144, 29, 0.1)',
-              p: 1,
+              p: 2,
+              paddingX: 4,
               borderRadius: 2,
               boxShadow: 1,
               display: 'flex',
@@ -193,18 +225,16 @@ const Selenium = () => {
             </Typography>
           </Box>
         </div>
-        <div
-          className="row-flex"
-          style={{ display: 'flex', width: '100%', paddingTop: '10px' }}>
+        <div className=" w-full flex flex-col md:flex-row mt-3 gap-3">
           <TextField
             label="Add Site URL here"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             fullWidth
             variant="outlined"
-            style={{ flex: 4, marginRight: '10px' }}
+            style={{ flex: 3.5 }}
           />
-          <FormControl style={{ flex: 3, height: '45px', marginRight: '7px' }}>
+          <FormControl style={{ flex: 1.5, height: '45px' }}>
             <InputLabel id="driver">Select your driver</InputLabel>
             <Select
               label="Select your driver"
@@ -223,23 +253,40 @@ const Selenium = () => {
             color="secondary"
             onClick={handleNewEditorOpen}
             startIcon={<AddIcon />}
-            style={{ flex: 1 }}>
+            style={{ flex: 1.2 }}>
             Add Operation
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={createActionChain}
+            startIcon={<AddIcon />}
+            style={{ flex: 1.2 }}>
+            Create Action Chain
           </Button>
         </div>
         <RightSidebar
           title="Edit Operation"
           isOpen={openSidebar}
           onClose={() => setOpenSidebar(false)}>
-          <SeleniumEdit
-            initialValues={activeOperation}
-            handleSubmit={handleSubmit}
-          />
+          {!editActionChain ? (
+            <SeleniumEdit
+              initialValues={activeOperation}
+              handleSubmit={handleSubmit}
+            />
+          ) : (
+            <ActionChainEdit
+              initialValues={activeActionChain}
+              handleSubmit={handleActionChainSubmit}></ActionChainEdit>
+          )}
         </RightSidebar>
         {rowData.length > 0 && (
           <SeleniumTable
             handleDelete={handleDelete}
             handleEdit={handleRowDataEdit}
+            handleActionChainEdit={handleActionChainEdit}
+            handleActionChainDelete={handleActionChainDelete}
+            handleActionChainEditorOpen={handleActionChainEditorOpen}
             values={rowData}></SeleniumTable>
         )}
 
@@ -257,12 +304,6 @@ const Selenium = () => {
           )}
         </div>
 
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={6000}
-          onClose={() => setOpenSnackbar(false)}
-          message={snackbarMessage}
-        />
         <CustomModal
           title={<Typography variant="h6">Selenium Script Preview</Typography>}
           open={previewModal}
