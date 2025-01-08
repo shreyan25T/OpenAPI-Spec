@@ -4,6 +4,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+
 import time
 
 shortWait = 10
@@ -14,14 +16,39 @@ def main():
     driver = webdriver.Chrome(service=service_obj)
     driver.get("{{url}}")
     {{#operations}}
+    {{^actionChainFlag}}
     {{#useWait}}
     WebDriverWait(driver, shortWait).until(EC.{{byWait}}((By.{{by}}, "{{byInput}}"))).{{action}}({{#actionInput}}"{{.}}"{{/actionInput}})
     {{/useWait}}
     {{^useWait}}
     driver.find_element(By.{{by}}, "{{byInput}}").{{action}}({{#actionInput}}"{{.}}"{{/actionInput}})
     {{/useWait}}
-    {{/operations}}
+    {{/actionChainFlag}}
+    {{#actionChainFlag}}
+    actions = ActionChains(driver)
+    {{/actionChainFlag}}
+    {{#actionChains}}
+    {{#req_arg}}{{/req_arg}}
+    {{^req_arg}}
+    element = driver.find_element(By.{{by}}, "{{byInput}}")
+    {{/req_arg}}
+    {{#actionInput}}
+    {{#req_string}}
+    actions.{{action}}("{{actionInput}}")
+    {{/req_string}}
+    {{^req_string}}
+    actions.{{action}}({{actionInput}})
+    {{/req_string}}
+    {{/actionInput}}
+    {{^actionInput}}
+    actions.{{action}}(element)
+    {{/actionInput}}    
+    {{/actionChains}}
+    {{#actionChainFlag}}
+    actions.perform()
+    {{/actionChainFlag}}
     time.sleep(2)
+    {{/operations}}
     driver.close()
 
 if __name__ == '__main__':

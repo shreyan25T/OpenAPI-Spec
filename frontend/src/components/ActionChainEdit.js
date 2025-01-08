@@ -10,29 +10,6 @@ import {
   Button,
 } from '@mui/material';
 
-const byWaitOptions = [
-  {
-    value: '',
-    label: 'None',
-  },
-  {
-    value: 'element_to_be_clickable',
-    label: 'Element to be clickable',
-  },
-  {
-    value: 'visibility_of_element_located',
-    label: 'Visibility of element located',
-  },
-  {
-    value: 'presence_of_element_located',
-    label: 'Presense of element located',
-  },
-  {
-    value: 'invisibility_of_element_located',
-    label: 'Invisibility of element located',
-  },
-];
-
 const byLocationOptions = [
   {
     value: 'NAME',
@@ -71,58 +48,58 @@ const actionOptions = [
     requireArg: true,
   },
   {
-    value: 'clear',
-    label: 'Clear',
-    requireArg: false,
-  },
-  {
     value: 'click',
     label: 'Click',
     requireArg: false,
   },
   {
-    value: 'get_text',
-    label: 'Get Text',
+    value: 'click_and_hold',
+    label: 'Click and Hold',
     requireArg: false,
   },
   {
-    value: 'get_attribute',
-    label: 'Get Attribute',
+    value: 'context_click',
+    label: 'Context Click',
+    requireArg: false,
+  },
+  {
+    value: 'double_click',
+    label: 'Double Click',
+    requireArg: false,
+  },
+  {
+    value: 'key_down',
+    label: 'Key Down',
+    requireArg: false,
+  },
+  {
+    value: 'key_up',
+    label: 'Key Up',
+    requireArg: false,
+  },
+  {
+    value: 'move_by_offset',
+    label: 'Move by Offset',
     requireArg: true,
   },
   {
-    value: 'is_enabled',
-    label: 'Is Enabled?',
+    value: 'move_to_element',
+    label: 'Move to Element',
     requireArg: false,
   },
   {
-    value: 'is_selected',
-    label: 'Is Selected?',
-    requireArg: false,
-  },
-  {
-    value: 'submit',
-    label: 'Submit',
-    requireArg: false,
-  },
-  {
-    value: 'get_property',
-    label: 'Get Property',
+    value: 'pause',
+    label: 'Pause all inputs',
     requireArg: true,
   },
   {
-    value: 'screenshot',
-    label: 'Screenshot',
-    requireArg: false,
-  },
-  {
-    value: 'value_of_css_property',
-    label: 'Value of CSS Property',
-    requireArg: false,
+    value: 'release',
+    label: 'Release held mouse',
+    requireArg: true,
   },
 ];
 
-const SeleniumEdit = ({ initialValues, handleSubmit }) => {
+const PytestEdit = ({ initialValues, handleSubmit }) => {
   return (
     <Formik initialValues={initialValues} onSubmit={handleSubmit}>
       {({ values, setFieldValue }) => (
@@ -136,20 +113,6 @@ const SeleniumEdit = ({ initialValues, handleSubmit }) => {
               paddingX: 2,
             }}>
             <FormControl fullWidth>
-              <InputLabel id="byWait">By Wait</InputLabel>
-              <Field
-                name="byWait"
-                as={Select}
-                label="By Wait"
-                labelId="byWait"
-                value={values?.byWait}
-                onChange={(e) => setFieldValue('byWait', e.target.value)}>
-                {byWaitOptions.map((item) => (
-                  <MenuItem value={item.value}>{item.label}</MenuItem>
-                ))}
-              </Field>
-            </FormControl>
-            <FormControl fullWidth>
               <InputLabel id="by">By Location</InputLabel>
               <Field
                 name="by"
@@ -157,6 +120,11 @@ const SeleniumEdit = ({ initialValues, handleSubmit }) => {
                 label="By Location"
                 labelId="by"
                 value={values?.by}
+                disabled={
+                  actionOptions.filter(
+                    (item) => item.value === values?.action
+                  )[0]?.requireArg
+                }
                 onChange={(e) => setFieldValue('by', e.target.value)}>
                 {byLocationOptions.map((item) => (
                   <MenuItem value={item.value}>{item.label}</MenuItem>
@@ -167,6 +135,10 @@ const SeleniumEdit = ({ initialValues, handleSubmit }) => {
               name="byInput"
               as={TextField}
               label="By Location Input"
+              disabled={
+                actionOptions.filter((item) => item.value === values?.action)[0]
+                  ?.requireArg
+              }
               fullWidth
             />
             <FormControl fullWidth>
@@ -177,10 +149,7 @@ const SeleniumEdit = ({ initialValues, handleSubmit }) => {
                 label="Command"
                 labelId="action"
                 value={values?.action}
-                onChange={(e) => {
-                  setFieldValue('action', e.target.value);
-                  setFieldValue('actionInput', '');
-                }}>
+                onChange={(e) => setFieldValue('action', e.target.value)}>
                 {actionOptions.map((item) => (
                   <MenuItem value={item.value}>{item.label}</MenuItem>
                 ))}
@@ -191,13 +160,11 @@ const SeleniumEdit = ({ initialValues, handleSubmit }) => {
               <Field
                 name="actionInput"
                 as={TextField}
-                value={values.actionInput}
                 label="Command Input"
                 fullWidth
               />
             )}
           </Box>
-
           {/* Footer */}
           <Box
             sx={{
@@ -222,4 +189,4 @@ const SeleniumEdit = ({ initialValues, handleSubmit }) => {
   );
 };
 
-export default SeleniumEdit;
+export default PytestEdit;
