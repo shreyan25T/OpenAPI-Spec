@@ -84,6 +84,7 @@ const Selenium = () => {
     setOpenSidebar(true);
     setEditActionChain(true);
     setEditorAction('CREATE');
+    setActiveActionChain(actionChainInitValues);
   };
 
   const handleActionChainEditorOpen = (index) => {

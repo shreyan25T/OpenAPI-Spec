@@ -33,7 +33,12 @@ def main():
     element = driver.find_element(By.{{by}}, "{{byInput}}")
     {{/req_arg}}
     {{#actionInput}}
+    {{#req_string}}
+    actions.{{action}}("{{actionInput}}")
+    {{/req_string}}
+    {{^req_string}}
     actions.{{action}}({{actionInput}})
+    {{/req_string}}
     {{/actionInput}}
     {{^actionInput}}
     actions.{{action}}(element)

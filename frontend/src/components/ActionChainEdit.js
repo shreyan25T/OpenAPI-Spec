@@ -67,16 +67,6 @@ const actionOptions = [
     label: 'Double Click',
     requireArg: false,
   },
-  // {
-  //   value: 'drag_and_drop',
-  //   label: 'Drag and Drop',
-  //   requireArg: false,
-  // },
-  // {
-  //   value: 'drag_and_drop_by_offset',
-  //   label: 'Drag and Drop by Offset',
-  //   requireArg: true,
-  // },
   {
     value: 'key_down',
     label: 'Key Down',
@@ -96,11 +86,6 @@ const actionOptions = [
     value: 'move_to_element',
     label: 'Move to Element',
     requireArg: false,
-  },
-  {
-    value: 'move_to_element_with_offset',
-    label: 'Move to element with offset',
-    requireArg: true,
   },
   {
     value: 'pause',
@@ -135,6 +120,11 @@ const PytestEdit = ({ initialValues, handleSubmit }) => {
                 label="By Location"
                 labelId="by"
                 value={values?.by}
+                disabled={
+                  actionOptions.filter(
+                    (item) => item.value === values?.action
+                  )[0]?.requireArg
+                }
                 onChange={(e) => setFieldValue('by', e.target.value)}>
                 {byLocationOptions.map((item) => (
                   <MenuItem value={item.value}>{item.label}</MenuItem>
@@ -145,6 +135,10 @@ const PytestEdit = ({ initialValues, handleSubmit }) => {
               name="byInput"
               as={TextField}
               label="By Location Input"
+              disabled={
+                actionOptions.filter((item) => item.value === values?.action)[0]
+                  ?.requireArg
+              }
               fullWidth
             />
             <FormControl fullWidth>

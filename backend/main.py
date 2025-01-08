@@ -181,6 +181,8 @@ async def download_selenium_file(request: Request):
         df["actionInput"] = ""
 
     df["actionInput"] = df["actionInput"].fillna("")
+    if "byWait" not in df.columns:
+        df["byWait"] = ""
     df["useWait"] = df["byWait"].str.len() > 0
     rendered = generate_code(
         {
