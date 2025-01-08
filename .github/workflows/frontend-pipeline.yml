@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - uat-deploy
-    paths:
-      - "*"
-      - "!backend/**"
+    paths-ignore:
+      - backend/**
 
 jobs:
   build_and_deploy_job:

@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - uat-deploy
-    paths:
-      - "*"
-      - "!frontend/**"
+    paths-ignore:
+      - frontend/**
   workflow_dispatch:
 
 jobs:
